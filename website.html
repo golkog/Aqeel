@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>تطبيق المتجر الرخيص - النسخة المطورة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1; 
+            --secondary: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #0f172a; 
+            --card: #1e293b; 
+            --text: #f1f5f9;
+            --input-bg: #334155;
+        }
+
+        * { box-sizing: border-box; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background-color: var(--bg); 
+            color: var(--text);
+            margin: 0; 
+            padding: 0; 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .app-header {
+            background: #1e293b;
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid #334155;
+        }
+        .app-header h1 { margin: 0; font-size: 1.6rem; font-weight: 900; color: #818cf8; }
+        .app-header p { margin: 5px 0 0; font-size: 0.9rem; opacity: 0.8; }
+
+        .container { padding: 15px; flex: 1; }
+
+        .backup-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .btn-backup {
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-export { border-color: var(--success); color: var(--success); }
+        .btn-import { border-color: var(--secondary); color: var(--secondary); }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .stat-item {
+            background: var(--card);
+            padding: 15px 5px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+        .stat-item b { display: block; font-size: 1.1rem; color: #fff; margin-bottom: 4px; }
+        .stat-item span { font-size: 0.75rem; color: #94a3b8; font-weight: 700; }
+
+        .form-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+            border: 1px solid #334155;
+        }
+        .form-card h2 { font-size: 1.1rem; margin-top: 0; margin-bottom: 15px; color: var(--primary); border-bottom: 1px solid #334155; padding-bottom: 10px; }
+
+        .field { margin-bottom: 15px; }
+        label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: #cbd5e1; }
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: var(--input-bg);
+            color: white;
+            transition: 0.3s;
+        }
+        input:focus { border-color: var(--primary); outline: none; background: #334155; }
+
+        .btn-main {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+            cursor: pointer;
+        }
+
+        .customer-card {
+            background: var(--card);
+            border-radius: 15px;
+            padding: 18px;
+            margin-bottom: 15px;
+            position: relative;
+            border-right: 5px solid var(--primary);
+            border-top: 1px solid #334155;
+            border-bottom: 1px solid #334155;
+            border-left: 1px solid #334155;
+        }
+        .customer-card.special { border-right-color: var(--warning); background: #1e293b; }
+        .customer-card.expired { border-right-color: var(--danger); opacity: 0.9; }
+        .customer-card.warning-near { border-right-color: var(--warning); border-right-width: 8px; }
+
+        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .cust-name { font-weight: 800; font-size: 1.1rem; color: #fff; }
+        .cust-service { font-size: 0.8rem; color: white; background: var(--primary); padding: 4px 10px; border-radius: 8px; }
+        
+        .card-info { font-size: 0.95rem; margin-bottom: 15px; line-height: 1.6; color: #cbd5e1; }
+        .card-info b { color: #fff; }
+        .email-text { font-size: 0.85rem; color: #818cf8; font-weight: 500; word-break: break-all; }
+
+        .card-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            border-top: 1px solid #334155;
+            padding-top: 15px;
+        }
+
+        .action-btn {
+            border: none;
+            padding: 12px 0;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .bg-whatsapp { background: #16a34a; }
+        .bg-pay { background: var(--success); }
+        .bg-img { background: #7c3aed; }
+        .bg-del { background: var(--danger); }
+        .bg-warning { background: var(--warning); color: #000; }
+        .bg-reminded { background: #10b981; color: #fff; }
+        .bg-renew { background: #3b82f6; color: #fff; } 
+
+        .status-tag {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-right: 5px;
+        }
+        .status-paid { background: #064e3b; color: #34d399; }
+        .status-unpaid { background: #7f1d1d; color: #f87171; }
+        .status-warning { background: #78350f; color: #fbbf24; }
+
+        #hidden-area { position: fixed; left: -9999px; }
+        .receipt { 
+            width: 550px; 
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
+            color: #ffffff; 
+            padding: 40px; 
+            text-align: right; 
+            border: 6px solid #6366f1;
+            border-radius: 30px;
+        }
+        .receipt h2 { 
+            color: #818cf8; 
+            text-align: center; 
+            margin-bottom: 25px; 
+            font-size: 2.2rem;
+            font-weight: 900;
+            border-bottom: 4px solid #334155; 
+            padding-bottom: 15px; 
+        }
+        .receipt-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 12px; 
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+            padding-bottom: 8px; 
+        }
+        .receipt-row span { 
+            color: #94a3b8; 
+            font-weight: bold; 
+            font-size: 1.1rem;
+            min-width: 140px;
+        }
+        .receipt-row b { 
+            color: #ffffff; 
+            font-size: 1.1rem; 
+            font-weight: 700;
+        }
+        
+        .receipt-footer {
+            text-align: center; 
+            margin-top: 30px; 
+            padding: 20px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 20px;
+            border: 2px solid rgba(99, 102, 241, 0.3);
+        }
+        .contact-info {
+            color: #10b981;
+            font-size: 2.2rem; 
+            font-weight: 900;
+            margin: 10px 0;
+            display: block;
+            direction: ltr;
+        }
+        .thank-you-msg {
+            font-size: 1.4rem;
+            color: #f1f5f9;
+            margin-bottom: 5px;
+            font-weight: 900;
+        }
+        .receipt-date {
+            font-size: 0.9rem;
+            color: #6366f1;
+            font-weight: bold;
+        }
+
+        .reminder-banner {
+            background: var(--warning);
+            color: #000;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+            padding: 5px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <h1>المتجر الرخيص 💸</h1>
+        <p>إدارة الاشتراكات والزبائن الاحترافية</p>
+    </header>
+
+    <div class="container">
+        
+        <div class="backup-controls">
+            <button class="btn-backup btn-export" onclick="exportData()">
+                📥 حفظ نسخة احتياطية
+            </button>
+            <button class="btn-backup btn-import" onclick="document.getElementById('file-input').click()">
+                📤 استعادة نسخة
+            </button>
+            <input type="file" id="file-input" style="display:none" accept=".json" onchange="importData(event)">
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <b id="stat-count">0</b>
+                <span>إجمالي الزبائن</span>
+            </div>
+            <div class="stat-item">
+                <b id="stat-today-money" style="color:var(--primary)">0</b>
+                <span>دخل اليوم</span>
+            </div>
+            <div class="stat-item">
+                <b id="stat-money" style="color:var(--success)">0</b>
+                <span>إجمالي المداخيل</span>
+            </div>
+            <div class="stat-item" style="border-color: var(--danger);">
+                <b id="stat-debt" style="color:var(--danger)">0</b>
+                <span>إجمالي الديون (نطلبهم)</span>
+            </div>
+            <div class="stat-item">
+                <b id="stat-expired" style="color:var(--danger)">0</b>
+                <span>اشتراكات منتهية</span>
+            </div>
+            <div class="stat-item" style="border-color: var(--warning);">
+                <b id="stat-need-reminder" style="color:var(--warning)">0</b>
+                <span>بانتظار التذكير</span>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <h2>➕ إضافة اشتراك جديد</h2>
+            
+            <div class="field">
+                <label>الخدمة</label>
+                <select id="f-service">
+                    <option value="ChatGPT Plus">ChatGPT Plus 🤖</option>
+                    <option value="Canva Pro">Canva Pro 🎨</option>
+                    <option value="CapCut Pro">CapCut Pro 🎬</option>
+                    <option value="عضوية ⭐">عضوية مميزة ⭐</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>اسم المساحة (Space Name)</label>
+                <input type="text" id="f-space" placeholder="مثال: Family Group 1">
+            </div>
+
+            <div class="field">
+                <label>اسم الزبون</label>
+                <input type="text" id="f-name" placeholder="الاسم الكامل">
+            </div>
+
+            <div class="field">
+                <label>رقم الواتساب</label>
+                <input type="tel" id="f-phone" placeholder="07xxxxxxxxx">
+            </div>
+
+            <div class="field">
+                <label>إيميل الزبون (اختياري)</label>
+                <input type="email" id="f-email" placeholder="customer@example.com" style="direction: ltr; text-align: right;">
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <div class="field" style="flex:1">
+                    <label>المبلغ (دينار)</label>
+                    <input type="number" id="f-price" value="10000">
+                </div>
+                <div class="field" style="flex:1">
+                    <label>المدة</label>
+                    <select id="f-duration" disabled>
+                        <option value="1">شهري</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <div class="field" style="flex:1">
+                    <label>تاريخ البدء</label>
+                    <input type="date" id="f-start" onchange="updateDate()">
+                </div>
+                <div class="field" style="flex:1">
+                    <label>النهاية (قابل للتعديل)</label>
+                    <input type="date" id="f-end">
+                </div>
+            </div>
+            <button class="btn-main" onclick="save()">حفظ البيانات</button>
+        </div>
+
+        <div class="search-area" style="display: flex; gap: 8px; margin-bottom: 20px;">
+            <input type="text" id="q" placeholder="ابحث باسم الزبون أو الإيميل..." oninput="render()" style="padding:12px; flex:1">
+            <button style="padding:0 15px; border-radius:12px; border:1px solid #334155; background:var(--card); color:white;" onclick="render()">🔍</button>
+        </div>
+
+        <div id="list"></div>
+    </div>
+
+    <div id="hidden-area">
+        <div id="receipt-box" class="receipt">
+            <h2>المتجر الرخيص 💸</h2>
+            <div id="receipt-data"></div>
+            <div class="receipt-footer">
+                <div class="thank-you-msg">شكراً لاختياركم المتجر الرخيص ✨</div>
+                <div style="font-size: 1.2rem; color: #94a3b8; font-weight: bold;">للتواصل والدعم الفني (واتساب):</div>
+                <div class="contact-info">07782228104</div>
+                <div id="r-date" class="receipt-date"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let db = JSON.parse(localStorage.getItem('cheap_store_m_db')) || [];
+        
+        function exportData() {
+            if (db.length === 0) return alert("لا توجد بيانات لتصديرها");
+            const dataStr = JSON.stringify(db, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileDefaultName = 'CheapStore_Backup_' + new Date().toLocaleDateString() + '.json';
+
+            let linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedDb = JSON.parse(e.target.result);
+                    if (Array.isArray(importedDb)) {
+                        if (confirm("هل تريد استبدال البيانات الحالية بالبيانات المستوردة؟")) {
+                            db = importedDb;
+                            localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+                            render();
+                            alert("تمت استعادة البيانات بنجاح ✅");
+                        }
+                    } else {
+                        alert("تنسيق الملف غير صحيح!");
+                    }
+                } catch (err) {
+                    alert("خطأ في قراءة الملف!");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function setInitialDates() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            
+            const today = `${year}-${month}-${day}`;
+            document.getElementById('f-start').value = today;
+            updateDate();
+        }
+
+        function updateDate() {
+            let startInput = document.getElementById('f-start').value;
+            if(!startInput) return;
+            let start = new Date(startInput);
+            start.setMonth(start.getMonth() + 1);
+            
+            const year = start.getFullYear();
+            const month = String(start.getMonth() + 1).padStart(2, '0');
+            const day = String(start.getDate()).padStart(2, '0');
+            
+            document.getElementById('f-end').value = `${year}-${month}-${day}`;
+        }
+
+        setInitialDates();
+
+        function save() {
+            const name = document.getElementById('f-name').value;
+            let phone = document.getElementById('f-phone').value; 
+            const space = document.getElementById('f-space').value || 'عام';
+            const email = document.getElementById('f-email').value || 'لا يوجد';
+            const price = document.getElementById('f-price').value;
+            const endDate = document.getElementById('f-end').value;
+
+            if(!name || !phone || !endDate) return alert("يرجى إدخال الاسم ورقم الهاتف وتاريخ النهاية");
+
+            phone = phone.replace(/\D/g, ''); 
+            if (phone.startsWith('964')) {
+                phone = '0' + phone.substring(3); 
+            } else if (!phone.startsWith('0')) {
+                phone = '0' + phone; 
+            }
+
+            const item = {
+                id: crypto.randomUUID(),
+                name, phone, email, space,
+                service: document.getElementById('f-service').value,
+                price: price,
+                start: document.getElementById('f-start').value,
+                end: endDate,
+                paid: false,
+                paymentDate: "", 
+                reminded: false,
+                createdAt: new Date().toISOString()
+            };
+
+            db.unshift(item);
+            localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+            
+            document.getElementById('f-name').value = '';
+            document.getElementById('f-phone').value = '';
+            document.getElementById('f-email').value = '';
+            document.getElementById('f-space').value = '';
+            
+            setInitialDates();
+            render();
+            window.scrollTo(0, 0);
+        }
+
+        function render() {
+            const list = document.getElementById('list');
+            const q = document.getElementById('q').value.toLowerCase();
+            list.innerHTML = '';
+
+            let totalMoney = 0; 
+            let todayMoney = 0;
+            let totalDebt = 0; 
+            let expiredCount = 0;
+            let needReminderCount = 0;
+
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+            
+            const todayStart = new Date();
+            todayStart.setHours(0,0,0,0);
+            
+            const tomorrow = new Date(todayStart);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            db.forEach(c => {
+                const endDate = new Date(c.end);
+                endDate.setHours(0,0,0,0);
+                
+                const isExpired = endDate < todayStart;
+                const isTomorrow = endDate.getTime() === tomorrow.getTime();
+
+                const currentPrice = parseInt(c.price) || 0;
+                
+                if(c.paid) {
+                    totalMoney += currentPrice;
+                    if(c.paymentDate && c.paymentDate.split('T')[0] === todayStr) {
+                        todayMoney += currentPrice;
+                    }
+                } else {
+                    totalDebt += currentPrice; 
+                }
+
+                if(isExpired) expiredCount++;
+                
+                if(isTomorrow && !c.reminded) {
+                    needReminderCount++;
+                }
+
+                if (c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q) || (c.space && c.space.toLowerCase().includes(q))) {
+                    const card = document.createElement('div');
+                    card.className = `customer-card ${isExpired ? 'expired' : ''} ${isTomorrow ? 'warning-near' : ''} ${c.service.includes('⭐') ? 'special' : ''}`;
+                    
+                    let reminderBtnHtml = '';
+                    if(isTomorrow) {
+                        if(c.reminded) {
+                            reminderBtnHtml = `<div class="action-btn bg-reminded" style="grid-column: span 4; margin-bottom: 8px;">تم التذكير ✅</div>`;
+                        } else {
+                            reminderBtnHtml = `<div class="action-btn bg-warning" style="grid-column: span 4; margin-bottom: 8px;" onclick="sendTomorrowReminder('${c.id}')">إرسال تذكير الانتهاء غداً 💬</div>`;
+                        }
+                    }
+
+                    let renewBtnHtml = '';
+                    if(isTomorrow || isExpired) {
+                        renewBtnHtml = `<div class="action-btn bg-renew" style="grid-column: span 4; margin-bottom: 8px;" onclick="renewSubscription('${c.id}')">تجديد الاشتراك لمدة شهر 🔄</div>`;
+                    }
+
+                    card.innerHTML = `
+                        ${isTomorrow ? '<div class="reminder-banner">🔔 تنبيه: ينتهي اشتراك هذا الزبون غداً!</div>' : ''}
+                        <div class="card-top">
+                            <div class="cust-name">${c.name}</div>
+                            <div class="cust-service">${c.service}</div>
+                        </div>
+                        <div class="card-info">
+                            <div>🚀 المساحة: <b>${c.space || 'عام'}</b></div>
+                            <div>📧 الإيميل: <span class="email-text">${c.email}</span></div>
+                            <div>📞 الهاتف: <b>${c.phone}</b></div>
+                            <div>📅 ينتهي: <b style="color:${isExpired?'var(--danger)':(isTomorrow?'var(--warning)':'inherit')}">${c.end}</b> 
+                                ${isTomorrow ? '<span class="status-tag status-warning">ينتهي غداً 🔔</span>' : ''}
+                            </div>
+                            <div>💰 المبلغ: ${currentPrice.toLocaleString()} د.ع 
+                                 <span class="status-tag ${c.paid?'status-paid':'status-unpaid'}">${c.paid?'مدفوع':'لم يدفع'}</span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            ${renewBtnHtml}
+                            ${reminderBtnHtml}
+                            <div class="action-btn bg-pay" onclick="togglePay('${c.id}')">${c.paid?'إلغاء دفع':'تأكيد دفع'}</div>
+                            <div class="action-btn bg-whatsapp" onclick="wa('${c.id}')">واتس</div>
+                            <div class="action-btn bg-img" onclick="snap('${c.id}')">وصل</div>
+                            <div class="action-btn bg-del" onclick="del('${c.id}')">حذف</div>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                }
+            });
+
+            document.getElementById('stat-count').innerText = db.length;
+            document.getElementById('stat-money').innerText = totalMoney.toLocaleString() + " د.ع";
+            document.getElementById('stat-today-money').innerText = todayMoney.toLocaleString() + " د.ع";
+            document.getElementById('stat-debt').innerText = totalDebt.toLocaleString() + " د.ع"; 
+            document.getElementById('stat-expired').innerText = expiredCount;
+            document.getElementById('stat-need-reminder').innerText = needReminderCount;
+        }
+
+        function renewSubscription(id) {
+            if(!confirm("هل تريد تجديد الاشتراك لهذا الزبون لمدة شهر إضافي من تاريخ اليوم؟")) return;
+            
+            let i = db.findIndex(x => x.id === id);
+            
+            // حساب التاريخ الجديد بناءً على تاريخ "اليوم"
+            let newStartDate = new Date();
+            let newEndDate = new Date();
+            newEndDate.setMonth(newEndDate.getMonth() + 1);
+            
+            const formatDate = (date) => {
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            };
+            
+            db[i].start = formatDate(newStartDate);
+            db[i].end = formatDate(newEndDate);
+            db[i].paid = true; // نعتبره مدفوع عند التجديد
+            db[i].paymentDate = new Date().toISOString(); // لكي يظهر في دخل اليوم
+            db[i].reminded = false;
+
+            localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+            render();
+            alert("تم التجديد بنجاح لمدة شهر من تاريخ اليوم ✅");
+        }
+
+        function togglePay(id) {
+            let i = db.findIndex(x => x.id === id);
+            db[i].paid = !db[i].paid;
+            
+            if(db[i].paid) {
+                db[i].paymentDate = new Date().toISOString();
+            } else {
+                db[i].paymentDate = "";
+            }
+            
+            localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+            render();
+        }
+
+        function del(id) {
+            if(confirm("هل أنت متأكد من حذف هذا المشترك؟")) {
+                db = db.filter(x => x.id !== id);
+                localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+                render();
+            }
+        }
+
+        function sendTomorrowReminder(id) {
+            let i = db.findIndex(x => x.id === id);
+            let c = db[i];
+            
+            let p = c.phone.replace(/\D/g, '');
+            if(p.startsWith('0')) p = '964' + p.substring(1);
+
+            const msg = `السلام عليكم \n` +
+                  `عزيزي الزبون غدا سوف ينتهي اشتراكك في (${c.service}) اذا حبيت تجدد اشتراكك تكدر تراسلنا واحنا بالخدمة \n` +
+                  `وشكرا جزيلا الك`;
+            
+            db[i].reminded = true;
+            localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+            render();
+
+            const waUrl = `https://api.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(msg)}`;
+            window.open(waUrl, '_blank');
+        }
+
+        function wa(id) {
+            let c = db.find(x => x.id === id);
+            let p = c.phone.replace(/\D/g, '');
+            if(p.startsWith('0')) p = '964' + p.substring(1);
+
+            let msg = `*المتجر الرخيص*\n\n` +
+                      `👤 الزبون: ${c.name}\n` +
+                      `🚀 المساحة: ${c.space || 'عام'}\n` +
+                      `🛠 الخدمة: ${c.service}\n` +
+                      `📧 الإيميل: ${c.email}\n` +
+                      `💰 المبلغ: ${parseInt(c.price).toLocaleString()} د.ع\n` +
+                      `📅 ينتهي في: ${c.end}\n` +
+                      `💳 الحالة: ${c.paid?'تم الدفع ✅':'بانتظار الدفع ❌'}`;
+            
+            const waUrl = `https://api.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(msg)}`;
+            window.open(waUrl, '_blank');
+        }
+
+        function snap(id) {
+            let c = db.find(x => x.id === id);
+            document.getElementById('r-date').innerText = "تحريراً في: " + new Date().toLocaleDateString('ar-EG');
+            
+            document.getElementById('receipt-data').innerHTML = `
+                <div class="receipt-row"><span>👤 الزبون:</span> <b>${c.name}</b></div>
+                <div class="receipt-row"><span>📞 الهاتف:</span> <b style="direction:ltr;">${c.phone}</b></div>
+                <div class="receipt-row"><span>🛠 الخدمة:</span> <b>${c.service}</b></div>
+                <div class="receipt-row"><span>🚀 المساحة:</span> <b>${c.space || 'عام'}</b></div>
+                <div class="receipt-row"><span>📧 الإيميل:</span> <b style="direction:ltr;">${c.email}</b></div>
+                <div class="receipt-row"><span>💰 المبلغ:</span> <b style="color:#fbbf24;">${parseInt(c.price).toLocaleString()} د.ع</b></div>
+                <div class="receipt-row"><span>📅 الانتهاء:</span> <b style="color:#f87171;">${c.end}</b></div>
+                <div class="receipt-row"><span>💳 الحالة:</span> <b style="color:${c.paid?'#10b981':'#ef4444'};">${c.paid?'تم الدفع ✅':'مطلوب للدفع ⏳'}</b></div>
+            `;
+
+            html2canvas(document.getElementById('receipt-box'), {
+                backgroundColor: '#0f172a',
+                scale: 3,
+                useCORS: true
+            }).then(canvas => {
+                let a = document.createElement('a');
+                a.download = `وصل-${c.name}.png`;
+                a.href = canvas.toDataURL("image/png");
+                a.click();
+            });
+        }
+
+        render();
+    </script>
+</body>
+</html>
