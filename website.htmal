@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -185,7 +184,15 @@
         .status-unpaid { background: #7f1d1d; color: #f87171; }
         .status-warning { background: #78350f; color: #fbbf24; }
 
-        #hidden-area { position: fixed; left: -9999px; }
+        /* ✅ إصلاح: بدل left:-9999px نخليه داخل الصفحة لكن مخفي (حتى html2canvas يلتقطه) */
+        #hidden-area { 
+            position: fixed; 
+            left: 0; 
+            top: 0; 
+            opacity: 0; 
+            pointer-events: none; 
+        }
+
         .receipt { 
             width: 550px; 
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); 
@@ -720,15 +727,38 @@
                 <div class="receipt-row"><span>💳 الحالة:</span> <b style="color:${c.paid?'#10b981':'#ef4444'};">${c.paid?'تم الدفع ✅':'مطلوب للدفع ⏳'}</b></div>
             `;
 
-            html2canvas(document.getElementById('receipt-box'), {
-                backgroundColor: '#0f172a',
-                scale: 3,
-                useCORS: true
-            }).then(canvas => {
-                let a = document.createElement('a');
-                a.download = `وصل-${c.name}.png`;
-                a.href = canvas.toDataURL("image/png");
-                a.click();
+            const target = document.getElementById('receipt-box');
+
+            /* ✅ إصلاح: ننتظر فريم واحد حتى يتحدث DOM، ثم نستخدم toBlob للتحميل (أكثر توافقاً) */
+            requestAnimationFrame(() => {
+                html2canvas(target, {
+                    backgroundColor: '#0f172a',
+                    scale: 3,
+                    useCORS: true,
+                    allowTaint: true
+                }).then(canvas => {
+                    const safeName = (c.name || 'زبون').replace(/[\\/:*?"<>|]/g, '-'); // لسلامة اسم الملف
+                    const filename = `وصل-${safeName}.png`;
+
+                    canvas.toBlob((blob) => {
+                        if (!blob) {
+                            // fallback
+                            let a = document.createElement('a');
+                            a.download = filename;
+                            a.href = canvas.toDataURL("image/png");
+                            a.click();
+                            return;
+                        }
+                        const url = URL.createObjectURL(blob);
+                        let a = document.createElement('a');
+                        a.href = url;
+                        a.download = filename;
+                        a.click();
+                        setTimeout(() => URL.revokeObjectURL(url), 1500);
+                    }, "image/png");
+                }).catch(() => {
+                    alert("تعذر إنشاء صورة الوصل. حاول مرة أخرى.");
+                });
             });
         }
 
