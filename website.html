@@ -231,11 +231,12 @@
       pointer-events: none;
     }
 
+    /* ✅ تكبير خط الوصل */
     .receipt {
-      width: 550px;
+      width: 650px; /* كان 550 */
       background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
       color: #ffffff;
-      padding: 40px;
+      padding: 45px; /* أكبر */
       text-align: right;
       border: 6px solid #6366f1;
       border-radius: 30px;
@@ -243,61 +244,61 @@
     .receipt h2 {
       color: #818cf8;
       text-align: center;
-      margin-bottom: 25px;
-      font-size: 2.2rem;
+      margin-bottom: 28px;
+      font-size: 2.7rem; /* كان 2.2 */
       font-weight: 900;
       border-bottom: 4px solid #334155;
-      padding-bottom: 15px;
+      padding-bottom: 18px;
     }
     .receipt-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      padding-bottom: 8px;
+      margin-bottom: 16px; /* أكبر */
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding-bottom: 10px;
+      gap: 18px;
     }
     .receipt-row span {
       color: #94a3b8;
-      font-weight: bold;
-      font-size: 1.1rem;
-      min-width: 140px;
+      font-weight: 900;
+      font-size: 1.35rem; /* كان 1.1 */
+      min-width: 170px; /* كان 140 */
     }
     .receipt-row b {
       color: #ffffff;
-      font-size: 1.1rem;
-      font-weight: 700;
+      font-size: 1.35rem; /* كان 1.1 */
+      font-weight: 900;
     }
 
     .receipt-footer {
       text-align: center;
-      margin-top: 30px;
-      padding: 20px;
+      margin-top: 34px;
+      padding: 22px;
       background: rgba(99, 102, 241, 0.1);
       border-radius: 20px;
       border: 2px solid rgba(99, 102, 241, 0.3);
     }
     .contact-info {
       color: #10b981;
-      font-size: 2.2rem;
+      font-size: 2.6rem; /* كان 2.2 */
       font-weight: 900;
       margin: 10px 0;
       display: block;
       direction: ltr;
     }
     .thank-you-msg {
-      font-size: 1.4rem;
+      font-size: 1.7rem; /* كان 1.4 */
       color: #f1f5f9;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
       font-weight: 900;
     }
     .receipt-date {
-      font-size: 0.9rem;
+      font-size: 1.05rem; /* كان 0.9 */
       color: #6366f1;
-      font-weight: bold;
+      font-weight: 900;
     }
 
-    /* ✅ منيو التعديل */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -398,7 +399,6 @@
       font-size: 0.9rem;
     }
 
-    /* ✅ شريط ايقونات مثل انستا/فيس */
     .tabs-bar {
       position: fixed;
       left: 0;
@@ -517,7 +517,7 @@
         <span>إجمالي الديون (نطلبهم)</span>
       </div>
       <div class="stat-item">
-        <b id="stat-expired" style="color:var(--danger)">0</b>
+        <b id="stat-expired">0</b>
         <span>اشتراكات منتهية</span>
       </div>
       <div class="stat-item" style="border-color: var(--warning);">
@@ -615,7 +615,7 @@
       <div id="receipt-data"></div>
       <div class="receipt-footer">
         <div class="thank-you-msg">شكراً لاختياركم المتجر الرخيص ✨</div>
-        <div style="font-size:1.2rem; color:#94a3b8; font-weight:bold;">للتواصل والدعم الفني (واتساب):</div>
+        <div style="font-size:1.45rem; color:#94a3b8; font-weight:900;">للتواصل والدعم الفني (واتساب):</div>
         <div class="contact-info">07782228104</div>
         <div id="r-date" class="receipt-date"></div>
       </div>
@@ -733,6 +733,27 @@
     let currentFilter = 'all';
     let editingId = null;
 
+    function hapticAndClickSound() {
+      if (navigator.vibrate) navigator.vibrate(18);
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.setValueAtTime(880, ctx.currentTime);
+        g.gain.setValueAtTime(0.0001, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.04, ctx.currentTime + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
+        o.connect(g);
+        g.connect(ctx.destination);
+        o.start();
+        o.stop(ctx.currentTime + 0.09);
+        setTimeout(() => ctx.close().catch(()=>{}), 150);
+      } catch (e) {}
+    }
+
     function exportData() {
       if (db.length === 0) return alert("لا توجد بيانات لتصديرها");
       const dataStr = JSON.stringify(db, null, 2);
@@ -747,7 +768,6 @@
     function importData(event) {
       const file = event.target.files[0];
       if (!file) return;
-
       const reader = new FileReader();
       reader.onload = function (e) {
         try {
@@ -759,12 +779,8 @@
               render();
               alert("تمت استعادة البيانات بنجاح ✅");
             }
-          } else {
-            alert("تنسيق الملف غير صحيح!");
-          }
-        } catch (err) {
-          alert("خطأ في قراءة الملف!");
-        }
+          } else alert("تنسيق الملف غير صحيح!");
+        } catch (err) { alert("خطأ في قراءة الملف!"); }
       };
       reader.readAsText(file);
     }
@@ -794,23 +810,16 @@
 
     function normalizeIraqPhone(phone) {
       phone = (phone || "").replace(/\D/g, '');
-      if (phone.startsWith('964')) {
-        phone = '0' + phone.substring(3);
-      } else if (phone && !phone.startsWith('0')) {
-        phone = '0' + phone;
-      }
+      if (phone.startsWith('964')) phone = '0' + phone.substring(3);
+      else if (phone && !phone.startsWith('0')) phone = '0' + phone;
       return phone;
     }
 
     function copyText(text) {
       if (!text) return alert("لا توجد بيانات للنسخ");
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text)
-          .then(() => alert("تم النسخ ✅"))
-          .catch(() => fallbackCopy(text));
-      } else {
-        fallbackCopy(text);
-      }
+        navigator.clipboard.writeText(text).then(() => alert("تم النسخ ✅")).catch(() => fallbackCopy(text));
+      } else fallbackCopy(text);
     }
 
     function fallbackCopy(text) {
@@ -823,33 +832,19 @@
       document.body.appendChild(ta);
       ta.focus();
       ta.select();
-      try {
-        document.execCommand('copy');
-        alert("تم النسخ ✅");
-      } catch (e) {
-        alert("تعذر النسخ، انسخ يدويًا.");
-      }
+      try { document.execCommand('copy'); alert("تم النسخ ✅"); }
+      catch (e) { alert("تعذر النسخ، انسخ يدويًا."); }
       document.body.removeChild(ta);
     }
 
-    function copySpaceEmail(id) {
-      const c = db.find(x => x.id === id);
-      copyText(c?.spaceEmail || "");
-    }
-
-    function copySpaceCode(id) {
-      const c = db.find(x => x.id === id);
-      copyText(c?.spaceCode || "");
-    }
+    function copySpaceEmail(id) { const c = db.find(x => x.id === id); copyText(c?.spaceEmail || ""); }
+    function copySpaceCode(id) { const c = db.find(x => x.id === id); copyText(c?.spaceCode || ""); }
 
     function openChatGPTLogin(id) {
       const c = db.find(x => x.id === id);
       const bundle = `Space Email: ${c?.spaceEmail || ""}\nSpace Code: ${c?.spaceCode || ""}`;
-      if ((c?.spaceEmail && c.spaceEmail.trim() !== "") || (c?.spaceCode && c.spaceCode.trim() !== "")) {
-        copyText(bundle);
-      } else {
-        alert("لا يوجد ايميل/رمز للمساحة لهذا الزبون. أضفها أولاً ثم جرّب.");
-      }
+      if ((c?.spaceEmail && c.spaceEmail.trim() !== "") || (c?.spaceCode && c.spaceCode.trim() !== "")) copyText(bundle);
+      else alert("لا يوجد ايميل/رمز للمساحة لهذا الزبون. أضفها أولاً ثم جرّب.");
       alert("افتح الرابط بوضع التصفح المتخفي (Incognito) من كروم، ثم الصق البيانات وسجل دخولك.");
       window.open("https://chatgpt.com", "_blank");
     }
@@ -859,8 +854,7 @@
       if (!c) return;
       let p = (c.phone || "").replace(/\D/g, '');
       if (p.startsWith('0')) p = '964' + p.substring(1);
-      const waUrl = `https://api.whatsapp.com/send?phone=${p}`;
-      window.open(waUrl, '_blank');
+      window.open(`https://api.whatsapp.com/send?phone=${p}`, '_blank');
     }
 
     function save() {
@@ -870,22 +864,14 @@
       const email = document.getElementById('f-email').value || 'لا يوجد';
       const price = document.getElementById('f-price').value;
       const endDate = document.getElementById('f-end').value;
-
       const spaceEmail = document.getElementById('f-space-email').value || '';
       const spaceCode = document.getElementById('f-space-code').value || '';
-
       if (!name || !phone || !endDate) return alert("يرجى إدخال الاسم ورقم الهاتف وتاريخ النهاية");
-
       phone = normalizeIraqPhone(phone);
 
       const item = {
         id: crypto.randomUUID(),
-        name,
-        phone,
-        email,
-        space,
-        spaceEmail,
-        spaceCode,
+        name, phone, email, space, spaceEmail, spaceCode,
         service: document.getElementById('f-service').value,
         price: price,
         start: document.getElementById('f-start').value,
@@ -914,7 +900,6 @@
     function openEdit(id) {
       const i = db.findIndex(x => x.id === id);
       if (i === -1) return;
-
       const c = db[i];
       editingId = id;
 
@@ -935,14 +920,8 @@
       setTimeout(() => document.getElementById('e-name').focus(), 10);
     }
 
-    function closeEdit() {
-      editingId = null;
-      document.getElementById('edit-overlay').style.display = 'none';
-    }
-
-    function closeEditIfOutside(e) {
-      if (e.target && e.target.id === 'edit-overlay') closeEdit();
-    }
+    function closeEdit() { editingId = null; document.getElementById('edit-overlay').style.display = 'none'; }
+    function closeEditIfOutside(e) { if (e.target && e.target.id === 'edit-overlay') closeEdit(); }
 
     function saveEdit() {
       if (!editingId) return;
@@ -1012,8 +991,7 @@
       localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
       render();
 
-      const waUrl = `https://api.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(msg)}`;
-      window.open(waUrl, '_blank');
+      window.open(`https://api.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     function renewSubscription(id) {
@@ -1066,10 +1044,7 @@
       let i = db.findIndex(x => x.id === id);
       if (i === -1) return;
       db[i].paid = !db[i].paid;
-
-      if (db[i].paid) db[i].paymentDate = new Date().toISOString();
-      else db[i].paymentDate = "";
-
+      db[i].paymentDate = db[i].paid ? new Date().toISOString() : "";
       localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
       render();
     }
@@ -1097,8 +1072,7 @@
         `📅 ينتهي في: ${c.end}\n` +
         `💳 الحالة: ${c.paid ? 'تم الدفع ✅' : 'بانتظار الدفع ❌'}`;
 
-      const waUrl = `https://api.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(msg)}`;
-      window.open(waUrl, '_blank');
+      window.open(`https://api.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     function snap(id) {
@@ -1145,9 +1119,7 @@
             a.click();
             setTimeout(() => URL.revokeObjectURL(url), 1500);
           }, "image/png");
-        }).catch(() => {
-          alert("تعذر إنشاء صورة الوصل. حاول مرة أخرى.");
-        });
+        }).catch(() => alert("تعذر إنشاء صورة الوصل. حاول مرة أخرى."));
       });
     }
 
@@ -1243,22 +1215,18 @@
       endDate.setHours(0,0,0,0);
       const msDay = 24 * 60 * 60 * 1000;
       const diffDays = Math.round((endDate.getTime() - todayStart.getTime()) / msDay);
-
       const isExpired = diffDays < 0;
       const isSoon = diffDays >= 0 && diffDays <= 3;
-
       return { isExpired, isSoon, daysLeft: diffDays };
     }
 
     function setFilter(filter) {
+      hapticAndClickSound();
       currentFilter = filter;
-
-      const tabs = ['all','unpaid','soon','expired'];
-      tabs.forEach(t => {
+      ['all','unpaid','soon','expired'].forEach(t => {
         const el = document.getElementById('tab-' + t);
         if (el) el.classList.toggle('active', t === filter);
       });
-
       render();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -1268,44 +1236,31 @@
       const list = document.getElementById('list');
       list.innerHTML = '';
 
-      let totalMoney = 0;
-      let todayMoney = 0;
-      let totalDebt = 0;
-
-      let expiredCount = 0;
-      let soonCount = 0;
-      let unpaidCount = 0;
+      let totalMoney = 0, todayMoney = 0, totalDebt = 0;
+      let expiredCount = 0, soonCount = 0, unpaidCount = 0;
 
       const now = new Date();
       const todayStr = now.toISOString().split('T')[0];
+      const todayStart = new Date(); todayStart.setHours(0,0,0,0);
 
-      const todayStart = new Date();
-      todayStart.setHours(0,0,0,0);
-
-      // احصائيات + عدادات
       db.forEach(c => {
         const price = parseInt(c.price) || 0;
-
         if (c.paid) {
           totalMoney += price;
           if (c.paymentDate && c.paymentDate.split('T')[0] === todayStr) todayMoney += price;
         } else {
-          totalDebt += price;
-          unpaidCount++;
+          totalDebt += price; unpaidCount++;
         }
-
         const flags = computeFlags(c, todayStart);
         if (flags.isExpired) expiredCount++;
         if (flags.isSoon) soonCount++;
       });
 
-      // تحديث البادجات
       document.getElementById('badge-all').innerText = db.length;
       document.getElementById('badge-unpaid').innerText = unpaidCount;
       document.getElementById('badge-soon').innerText = soonCount;
       document.getElementById('badge-expired').innerText = expiredCount;
 
-      // تحديث الشريط العلوي
       document.getElementById('stat-count').innerText = db.length;
       document.getElementById('stat-money').innerText = totalMoney.toLocaleString() + " د.ع";
       document.getElementById('stat-today-money').innerText = todayMoney.toLocaleString() + " د.ع";
@@ -1313,7 +1268,6 @@
       document.getElementById('stat-expired').innerText = expiredCount;
       document.getElementById('stat-need-reminder').innerText = soonCount;
 
-      // العنوان حسب الفلتر
       const titleMap = {
         all: "كل المشتركين",
         unpaid: "المشتركين الذين لم يدفعوا",
@@ -1322,34 +1276,27 @@
       };
       document.getElementById('filter-title').innerText = titleMap[currentFilter] || "كل المشتركين";
 
-      // عرض العناصر حسب الفلتر
       let shown = 0;
-
       db.forEach(c => {
         const flags = computeFlags(c, todayStart);
-
         const match =
           (c.name || "").toLowerCase().includes(q) ||
           (c.email || "").toLowerCase().includes(q) ||
           (c.space || "").toLowerCase().includes(q) ||
           (c.service || "").toLowerCase().includes(q);
-
         if (!match) return;
 
         let pass = true;
         if (currentFilter === 'unpaid') pass = !c.paid;
         else if (currentFilter === 'soon') pass = flags.isSoon;
         else if (currentFilter === 'expired') pass = flags.isExpired;
-
         if (!pass) return;
 
-        const card = buildCard(c, flags);
-        list.appendChild(card);
+        list.appendChild(buildCard(c, flags));
         shown++;
       });
 
       document.getElementById('filter-subtitle').innerText = `${shown} نتيجة`;
-
       if (shown === 0) {
         const div = document.createElement('div');
         div.className = 'empty';
