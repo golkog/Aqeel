@@ -3,481 +3,562 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Subscription Lady - النسخة المطورة</title>
+  <title>Subscription Lady</title>
+
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+  <!-- Firebase (Google) - compat version for simple usage in one HTML -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore-compat.js"></script>
+
   <style>
-    :root {
-      /* ✅ واجهة وردي خفيف */
-      --primary: #ec4899;   /* pink-500 */
-      --secondary: #f472b6; /* pink-400 */
+    :root{
+      --primary: #ec4899;
+      --secondary: #f472b6;
       --success: #10b981;
       --danger: #ef4444;
       --warning: #f59e0b;
 
-      --bg: #0b1220;        /* أغمق شوي */
-      --card: #141c2e;      /* أغمق مع لمسة وردي */
-      --text: #f1f5f9;
-      --input-bg: #1d2843;
+      --bg: #0b0612;
+      --card: #140a1f;
+      --text: #ffffff;
+      --input-bg: #1f0f2e;
     }
 
     * { box-sizing: border-box; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
-
-    body {
+    body{
       background-color: var(--bg);
       color: var(--text);
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+      margin:0;
+      padding:0;
+      display:flex;
+      flex-direction:column;
+      min-height:100vh;
     }
 
-    .app-header {
-      background: #141c2e;
-      color: white;
-      padding: 25px 20px;
-      text-align: center;
+    .app-header{
+      background: linear-gradient(135deg, #ec4899, #db2777);
+      color:#fff;
+      padding: 22px 16px;
+      text-align:center;
       position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.35);
-      border-bottom: 1px solid #243155;
+      top:0;
+      z-index:100;
+      border-bottom: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
     }
-    .app-header h1 { margin: 0; font-size: 1.6rem; font-weight: 900; color: #f9a8d4; }
-    .app-header p { margin: 5px 0 0; font-size: 0.9rem; opacity: 0.85; }
+    .app-header h1{ margin:0; font-size:1.85rem; font-weight:900; }
+    .app-header p{ margin:6px 0 0; font-size:1rem; font-weight:800; opacity:0.95; }
 
-    .container { padding: 15px; flex: 1; padding-bottom: 90px; }
+    .container{ padding:15px; flex:1; padding-bottom: 90px; }
 
-    .backup-controls {
-      display: grid;
+    .backup-controls{
+      display:grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
+      gap:10px;
+      margin-bottom:12px;
     }
-    .btn-backup {
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid #243155;
-      background: #141c2e;
-      color: white;
-      font-size: 0.85rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+    .btn-backup{
+      padding:12px;
+      border-radius:12px;
+      border:1px solid rgba(236,72,153,0.22);
+      background: var(--card);
+      color:#fff;
+      font-size:0.95rem;
+      font-weight:900;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
     }
-    .btn-export { border-color: var(--success); color: var(--success); }
-    .btn-import { border-color: var(--secondary); color: var(--secondary); }
+    .btn-export{ border-color: rgba(16,185,129,0.55); color:#6ee7b7; }
+    .btn-import{ border-color: rgba(236,72,153,0.55); color:#f9a8d4; }
 
-    .stats-bar {
-      display: grid;
+    .cloud-controls{
+      display:grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    .stat-item {
-      background: var(--card);
-      padding: 15px 5px;
-      border-radius: 12px;
-      text-align: center;
-      border: 1px solid #243155;
-    }
-    .stat-item b { display: block; font-size: 1.1rem; color: #fff; margin-bottom: 4px; }
-    .stat-item span { font-size: 0.75rem; color: #a7b0c6; font-weight: 700; }
-
-    .form-card {
-      background: var(--card);
-      padding: 20px;
-      border-radius: 15px;
+      gap:10px;
       margin-bottom: 18px;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.45);
-      border: 1px solid #243155;
     }
-    .form-card h2 {
-      font-size: 1.1rem;
-      margin-top: 0;
-      margin-bottom: 15px;
-      color: var(--primary);
-      border-bottom: 1px solid #243155;
-      padding-bottom: 10px;
+    .btn-cloud{
+      padding:12px;
+      border-radius:12px;
+      border:1px solid rgba(236,72,153,0.22);
+      background: #0f0a17;
+      color:#fff;
+      font-size:0.95rem;
+      font-weight:900;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
     }
+    .btn-login{ border-color: rgba(59,130,246,0.55); color:#93c5fd; }
+    .btn-logout{ border-color: rgba(239,68,68,0.55); color:#fca5a5; }
 
-    .field { margin-bottom: 15px; }
-    label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: #cbd5e1; }
-    input, select {
-      width: 100%;
-      padding: 14px;
-      border: 1px solid #243155;
-      border-radius: 12px;
-      font-size: 1rem;
-      background: var(--input-bg);
-      color: white;
-      transition: 0.3s;
-    }
-    input:focus, select:focus { border-color: var(--primary); outline: none; background: #223055; }
-
-    .btn-main {
-      width: 100%;
-      padding: 16px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      margin-top: 10px;
-      box-shadow: 0 4px 10px rgba(236, 72, 153, 0.35);
-      cursor: pointer;
-    }
-
-    .customer-card {
-      background: var(--card);
-      border-radius: 15px;
-      padding: 18px;
-      margin-bottom: 15px;
-      position: relative;
-      border-right: 5px solid var(--primary);
-      border-top: 1px solid #243155;
-      border-bottom: 1px solid #243155;
-      border-left: 1px solid #243155;
-    }
-    .customer-card.special { border-right-color: var(--warning); background: #141c2e; }
-    .customer-card.expired { border-right-color: var(--danger); opacity: 0.95; }
-    .customer-card.warning-near { border-right-color: var(--warning); border-right-width: 8px; }
-
-    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .cust-name { font-weight: 800; font-size: 1.1rem; color: #fff; }
-    .cust-service { font-size: 0.8rem; color: white; background: var(--primary); padding: 4px 10px; border-radius: 8px; }
-
-    .card-info { font-size: 0.95rem; margin-bottom: 15px; line-height: 1.6; color: #cbd5e1; }
-    .card-info b { color: #fff; }
-    .email-text { font-size: 0.85rem; color: #f9a8d4; font-weight: 600; word-break: break-all; }
-
-    .card-actions {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      border-top: 1px solid #243155;
-      padding-top: 15px;
-    }
-
-    .action-btn {
-      border: none;
-      padding: 12px 0;
-      border-radius: 10px;
-      color: white;
-      font-size: 0.85rem;
-      font-weight: 700;
-      text-align: center;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .bg-whatsapp { background: #16a34a; }
-    .bg-contact { background: #22c55e; }
-    .bg-pay { background: var(--success); }
-    .bg-img { background: #7c3aed; }
-    .bg-del { background: var(--danger); }
-    .bg-edit { background: #0ea5e9; }
-    .bg-warning { background: var(--warning); color: #000; }
-    .bg-reminded { background: #10b981; color: #fff; }
-    .bg-renew { background: #3b82f6; color: #fff; }
-
-    .status-tag {
-      font-size: 0.75rem;
-      padding: 3px 8px;
-      border-radius: 6px;
-      margin-right: 5px;
-    }
-    .status-paid { background: #064e3b; color: #34d399; }
-    .status-unpaid { background: #7f1d1d; color: #f87171; }
-    .status-warning { background: #78350f; color: #fbbf24; }
-
-    .reminder-banner {
-      background: var(--warning);
-      color: #000;
-      text-align: center;
-      font-weight: bold;
-      font-size: 0.85rem;
-      padding: 6px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      animation: pulse 2s infinite;
-    }
-    .expired-banner {
-      background: var(--danger);
-      color: #fff;
-      text-align: center;
-      font-weight: bold;
-      font-size: 0.85rem;
-      padding: 6px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      opacity: 0.95;
-    }
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.7; }
-      100% { opacity: 1; }
-    }
-
-    #hidden-area {
-      position: fixed;
-      left: 0;
-      top: 0;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    /* ✅ الوصل: لون مختلف شوي (وردي/بنفسجي) + نفس تكبير الخط السابق */
-    .receipt {
-      width: 650px;
-      background: linear-gradient(135deg, #2a1230 0%, #0b1220 55%, #1a1140 100%);
-      color: #ffffff;
-      padding: 45px;
-      text-align: right;
-      border: 6px solid #ec4899;
-      border-radius: 30px;
-    }
-    .receipt h2 {
-      color: #f9a8d4;
-      text-align: center;
-      margin-bottom: 28px;
-      font-size: 2.7rem;
-      font-weight: 900;
-      border-bottom: 4px solid rgba(255,255,255,0.12);
-      padding-bottom: 18px;
-    }
-    .receipt-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      padding-bottom: 10px;
-      gap: 18px;
-    }
-    .receipt-row span {
-      color: #fbcfe8;
-      font-weight: 900;
-      font-size: 1.35rem;
-      min-width: 170px;
-      opacity: 0.9;
-    }
-    .receipt-row b {
-      color: #ffffff;
-      font-size: 1.35rem;
-      font-weight: 900;
-    }
-
-    .receipt-footer {
-      text-align: center;
-      margin-top: 34px;
-      padding: 22px;
-      background: rgba(236, 72, 153, 0.12);
-      border-radius: 20px;
-      border: 2px solid rgba(236, 72, 153, 0.35);
-    }
-    .contact-info {
-      color: #34d399;
-      font-size: 2.6rem;
-      font-weight: 900;
-      margin: 10px 0;
-      display: block;
-      direction: ltr;
-    }
-    .thank-you-msg {
-      font-size: 1.7rem;
-      color: #f1f5f9;
-      margin-bottom: 8px;
-      font-weight: 900;
-    }
-    .receipt-date {
-      font-size: 1.05rem;
-      color: #f9a8d4;
-      font-weight: 900;
-    }
-
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.55);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      padding: 14px;
-    }
-    .modal {
-      width: min(720px, 100%);
-      max-height: 88vh;
-      overflow: auto;
-      background: #0b1220;
-      border: 1px solid #243155;
-      border-radius: 18px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-      padding: 16px;
-    }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 10px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #243155;
-    }
-    .modal-title { font-weight: 900; color: #f9a8d4; font-size: 1.05rem; }
-    .modal-close {
-      background: transparent;
-      border: 1px solid #243155;
-      color: #cbd5e1;
-      border-radius: 10px;
-      padding: 8px 10px;
-      cursor: pointer;
-      font-weight: 800;
-    }
-    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    @media (max-width: 560px) { .modal-grid { grid-template-columns: 1fr; } }
-    .modal-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 14px;
-      padding-top: 12px;
-      border-top: 1px solid #243155;
-    }
-    .btn-secondary {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid #243155;
-      background: #111b2e;
-      color: #cbd5e1;
-      font-weight: 900;
-      cursor: pointer;
-    }
-    .btn-save {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 0;
-      background: var(--primary);
-      color: #fff;
-      font-weight: 900;
-      cursor: pointer;
-    }
-    .mini-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      padding: 10px;
-      border: 1px solid #243155;
-      border-radius: 12px;
-      background: #111b2e;
-      margin-top: 10px;
-    }
-    .mini-row input[type="checkbox"]{ width: 18px; height: 18px; accent-color: var(--primary); }
-    .mini-row span{ color: #cbd5e1; font-weight: 900; font-size: 0.9rem; }
-
-    .tabs-bar {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(11,18,32,0.92);
-      backdrop-filter: blur(8px);
-      border-top: 1px solid #243155;
-      z-index: 999;
-      padding: 10px 10px 12px;
-    }
-    .tabs {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .tab-btn {
-      position: relative;
-      border: 1px solid #243155;
-      background: #0b1220;
+    .cloud-status{
+      background: rgba(20,10,31,0.75);
+      border: 1px solid rgba(236,72,153,0.18);
       border-radius: 14px;
-      color: #cbd5e1;
-      padding: 10px 8px;
-      cursor: pointer;
-      text-align: center;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      color: rgba(255,255,255,0.9);
       font-weight: 900;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
+      display:flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items:center;
     }
-    .tab-btn .icon { font-size: 1.2rem; line-height: 1; }
-    .tab-btn .label { font-size: 0.78rem; }
-    .tab-btn.active {
-      border-color: rgba(236,72,153,0.7);
-      box-shadow: 0 0 0 3px rgba(236,72,153,0.18);
-      color: #fff;
-    }
-    .tab-badge {
-      position: absolute;
-      top: -7px;
-      left: 10px;
-      background: #111b2e;
-      border: 1px solid #243155;
-      color: #cbd5e1;
+    .cloud-status small{ opacity:0.9; font-weight:800; }
+    .pill{
+      border: 1px solid rgba(236,72,153,0.22);
+      background: rgba(0,0,0,0.25);
       border-radius: 999px;
-      font-size: 0.72rem;
+      padding: 4px 10px;
+      font-size: 0.85rem;
       font-weight: 900;
-      padding: 2px 8px;
-      min-width: 24px;
-      text-align: center;
+      white-space: nowrap;
     }
-    .tab-badge.danger { border-color: rgba(239,68,68,0.55); color: #f87171; }
-    .tab-badge.warning { border-color: rgba(245,158,11,0.55); color: #fbbf24; }
-    .tab-badge.success { border-color: rgba(16,185,129,0.55); color: #34d399; }
 
-    .filter-title {
-      background: rgba(20,28,46,0.55);
-      border: 1px solid #243155;
+    .stats-bar{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-bottom:16px;
+    }
+    .stat-item{
+      background: var(--card);
+      padding:15px 6px;
+      border-radius:12px;
+      text-align:center;
+      border:1px solid rgba(236,72,153,0.18);
+    }
+    .stat-item b{ display:block; font-size:1.2rem; color:#fff; margin-bottom:4px; font-weight:900; }
+    .stat-item span{ font-size:0.92rem; color: rgba(255,255,255,0.80); font-weight:800; }
+
+    .form-card{
+      background: var(--card);
+      padding:20px;
+      border-radius:15px;
+      margin-bottom:18px;
+      box-shadow: 0 10px 18px rgba(0,0,0,0.45);
+      border:1px solid rgba(236,72,153,0.18);
+    }
+    .form-card h2{
+      font-size:1.2rem;
+      margin:0 0 15px;
+      color:#f9a8d4;
+      border-bottom: 1px solid rgba(236,72,153,0.18);
+      padding-bottom: 10px;
+      font-weight:900;
+    }
+
+    .field{ margin-bottom:15px; }
+    label{ display:block; font-size:0.98rem; font-weight:900; margin-bottom:7px; color: rgba(255,255,255,0.92); }
+    input, select{
+      width:100%;
+      padding:14px;
+      border:1px solid rgba(236,72,153,0.22);
+      border-radius:12px;
+      font-size:1.05rem;
+      background: var(--input-bg);
+      color:#fff;
+      transition:0.25s;
+    }
+    input:focus, select:focus{ border-color: rgba(236,72,153,0.70); outline:none; background:#24113a; }
+
+    .btn-main{
+      width:100%;
+      padding:16px;
+      background: linear-gradient(135deg, #ec4899, #f472b6);
+      color:#140a1f;
+      border:none;
+      border-radius:12px;
+      font-weight:900;
+      font-size:1.15rem;
+      margin-top:10px;
+      cursor:pointer;
+      box-shadow: 0 6px 14px rgba(236,72,153,0.25);
+    }
+
+    .filter-title{
+      background: rgba(20,10,31,0.75);
+      border: 1px solid rgba(236,72,153,0.18);
       border-radius: 16px;
       padding: 12px 14px;
       margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
     }
-    .filter-title b { color: #fff; font-weight: 900; }
-    .filter-title span { color: #a7b0c6; font-weight: 900; font-size: 0.85rem; }
+    .filter-title b { color:#fff; font-weight:900; font-size:1.05rem; }
+    .filter-title span { color: rgba(255,255,255,0.80); font-weight:900; font-size:0.95rem; }
 
-    .empty {
-      background: rgba(20,28,46,0.45);
-      border: 1px dashed #243155;
-      border-radius: 16px;
-      padding: 14px;
-      color: #a7b0c6;
+    .customer-card{
+      background: var(--card);
+      border-radius:15px;
+      padding:18px;
+      margin-bottom:15px;
+      position:relative;
+      border-right: 6px solid var(--primary);
+      border: 1px solid rgba(236,72,153,0.18);
+    }
+    .customer-card.special { border-right-color: var(--warning); background: #170b25; }
+    .customer-card.expired { border-right-color: var(--danger); opacity: 0.97; }
+    .customer-card.warning-near { border-right-color: var(--warning); border-right-width: 9px; }
+
+    .card-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; }
+    .cust-name{ font-weight:900; font-size:1.15rem; color:#fff; }
+    .cust-service{ font-size:0.9rem; color:#140a1f; background: var(--primary); padding:5px 10px; border-radius:8px; font-weight:900; }
+
+    .card-info{ font-size:1.02rem; margin-bottom:15px; line-height:1.75; color: rgba(255,255,255,0.88); }
+    .card-info b{ color:#fff; }
+    .email-text{ font-size:0.92rem; color: rgba(255,255,255,0.92); font-weight:800; word-break: break-all; }
+
+    .card-actions{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+      border-top: 1px solid rgba(236,72,153,0.18);
+      padding-top: 15px;
+    }
+    .action-btn{
+      border:none;
+      padding:12px 0;
+      border-radius:10px;
+      color:#fff;
+      font-size:0.92rem;
+      font-weight:900;
+      text-align:center;
+      cursor:pointer;
+      user-select:none;
+    }
+
+    .bg-whatsapp{ background:#16a34a; }
+    .bg-contact{ background:#22c55e; }
+    .bg-pay{ background: var(--success); }
+    .bg-img{ background:#f472b6; }
+    .bg-del{ background: var(--danger); }
+    .bg-edit{ background:#db2777; }
+    .bg-warning{ background: var(--warning); color:#000; }
+    .bg-reminded{ background:#10b981; color:#fff; }
+    .bg-renew{ background:#ec4899; color:#fff; }
+
+    .status-tag{
+      font-size:0.82rem;
+      padding:3px 8px;
+      border-radius:6px;
+      margin-right:5px;
+      font-weight:900;
+    }
+    .status-paid{ background:#064e3b; color:#34d399; }
+    .status-unpaid{ background:#7f1d1d; color:#f87171; }
+    .status-warning{ background:#78350f; color:#fbbf24; }
+
+    .reminder-banner{
+      background: var(--warning);
+      color:#000;
+      text-align:center;
+      font-weight:900;
+      font-size:0.95rem;
+      padding:7px;
+      border-radius:8px;
+      margin-bottom:12px;
+      animation:pulse 2s infinite;
+    }
+    .expired-banner{
+      background: var(--danger);
+      color:#fff;
+      text-align:center;
+      font-weight:900;
+      font-size:0.95rem;
+      padding:7px;
+      border-radius:8px;
+      margin-bottom:12px;
+      opacity:0.97;
+    }
+    @keyframes pulse{
+      0%{ opacity:1; }
+      50%{ opacity:0.75; }
+      100%{ opacity:1; }
+    }
+
+    #hidden-area{
+      position:fixed;
+      left:0;
+      top:0;
+      opacity:0;
+      pointer-events:none;
+    }
+
+    /* ✅ الوصل: وردي فاتح جدًا + كتابة داكنة حتى تكون واضحة */
+    .receipt{
+      width:650px;
+      background: linear-gradient(135deg, #ffe4f1 0%, #ffd1e8 60%, #ffc1e2 100%);
+      color:#111827; /* ✅ الكتابة داكنة للوضوح */
+      padding:45px;
+      text-align:right;
+      border: 6px solid rgba(236,72,153,0.25);
+      border-radius: 30px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+    }
+    .receipt h2{
+      color:#111827;
+      text-align:center;
+      margin-bottom: 26px;
+      font-size: 2.7rem;
       font-weight: 900;
-      text-align: center;
-      margin-top: 10px;
+      border-bottom: 4px solid rgba(17,24,39,0.12);
+      padding-bottom: 16px;
+    }
+    .receipt-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:16px;
+      border-bottom: 1px solid rgba(17,24,39,0.10);
+      padding-bottom:10px;
+      gap:18px;
+    }
+    .receipt-row span{
+      color: rgba(17,24,39,0.70);
+      font-weight: 900;
+      font-size: 1.35rem;
+      min-width: 170px;
+    }
+    .receipt-row b{
+      color:#111827;
+      font-size: 1.35rem;
+      font-weight: 900;
+    }
+    .receipt-footer{
+      text-align:center;
+      margin-top: 34px;
+      padding: 22px;
+      background: rgba(255,255,255,0.55);
+      border-radius: 20px;
+      border: 2px solid rgba(17,24,39,0.08);
+    }
+    .contact-info{
+      color:#111827;
+      font-size: 2.6rem;
+      font-weight: 900;
+      margin: 10px 0;
+      display:block;
+      direction:ltr;
+    }
+    .thank-you-msg{
+      font-size: 1.7rem;
+      color:#111827;
+      margin-bottom: 8px;
+      font-weight: 900;
+    }
+    .receipt-date{
+      font-size: 1.1rem;
+      color: rgba(17,24,39,0.75);
+      font-weight: 900;
+    }
+
+    .modal-overlay{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,0.60);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      padding:14px;
+    }
+    .modal{
+      width:min(720px, 100%);
+      max-height:88vh;
+      overflow:auto;
+      background: var(--card);
+      border:1px solid rgba(236,72,153,0.22);
+      border-radius:18px;
+      box-shadow:0 20px 40px rgba(0,0,0,0.55);
+      padding:16px;
+    }
+    .modal-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:10px;
+      padding-bottom:10px;
+      border-bottom:1px solid rgba(236,72,153,0.18);
+    }
+    .modal-title{
+      font-weight:900;
+      color:#fff;
+      font-size:1.08rem;
+    }
+    .modal-close{
+      background:transparent;
+      border:1px solid rgba(236,72,153,0.22);
+      color: rgba(255,255,255,0.92);
+      border-radius:10px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-weight:900;
+    }
+    .modal-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width:560px){
+      .modal-grid{ grid-template-columns:1fr; }
+    }
+    .modal-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:14px;
+      padding-top:12px;
+      border-top:1px solid rgba(236,72,153,0.18);
+    }
+    .btn-secondary{
+      width:100%;
+      padding:14px;
+      border-radius:12px;
+      border:1px solid rgba(236,72,153,0.18);
+      background:#0b0612;
+      color: rgba(255,255,255,0.92);
+      font-weight:900;
+      cursor:pointer;
+    }
+    .btn-save{
+      width:100%;
+      padding:14px;
+      border-radius:12px;
+      border:0;
+      background: var(--primary);
+      color:#0b0612;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .mini-row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding:10px;
+      border:1px solid rgba(236,72,153,0.18);
+      border-radius:12px;
+      background:#0b0612;
+      margin-top:10px;
+    }
+    .mini-row input[type="checkbox"]{
+      width:18px;
+      height:18px;
+      accent-color:#ec4899;
+    }
+    .mini-row span{
+      color: rgba(255,255,255,0.92);
+      font-weight:900;
+      font-size:0.95rem;
+    }
+
+    .tabs-bar{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      background: rgba(11,6,18,0.92);
+      backdrop-filter: blur(8px);
+      border-top:1px solid rgba(236,72,153,0.18);
+      z-index:999;
+      padding:10px 10px 12px;
+    }
+    .tabs{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+      max-width:900px;
+      margin:0 auto;
+    }
+    .tab-btn{
+      position:relative;
+      border:1px solid rgba(236,72,153,0.18);
+      background:#140a1f;
+      border-radius:14px;
+      color: rgba(255,255,255,0.90);
+      padding:10px 8px;
+      cursor:pointer;
+      text-align:center;
+      font-weight:900;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      align-items:center;
+      justify-content:center;
+      user-select:none;
+    }
+    .tab-btn .icon{ font-size:1.25rem; line-height:1; }
+    .tab-btn .label{ font-size:0.9rem; }
+    .tab-btn.active{
+      border-color: rgba(236,72,153,0.75);
+      box-shadow: 0 0 0 3px rgba(236,72,153,0.18);
+      color:#fff;
+    }
+    .tab-badge{
+      position:absolute;
+      top:-7px;
+      left:10px;
+      background:#0b0612;
+      border:1px solid rgba(236,72,153,0.18);
+      color: rgba(255,255,255,0.92);
+      border-radius:999px;
+      font-size:0.82rem;
+      font-weight:900;
+      padding:2px 8px;
+      min-width:24px;
+      text-align:center;
+    }
+    .tab-badge.danger{ border-color: rgba(239,68,68,0.55); color:#fca5a5; }
+    .tab-badge.warning{ border-color: rgba(245,158,11,0.55); color:#fcd34d; }
+    .tab-badge.success{ border-color: rgba(16,185,129,0.55); color:#6ee7b7; }
+
+    .empty{
+      background: rgba(20,10,31,0.65);
+      border:1px dashed rgba(236,72,153,0.25);
+      border-radius:16px;
+      padding:14px;
+      color: rgba(255,255,255,0.78);
+      font-weight:900;
+      text-align:center;
+      margin-top:10px;
+      font-size:1rem;
     }
   </style>
 </head>
 
 <body>
   <header class="app-header">
-    <h1>Subscription Lady</h1>
+    <h1>Subscription Lady 💖</h1>
     <p>إدارة الاشتراكات والزبائن الاحترافية</p>
   </header>
 
   <div class="container">
+
+    <div class="cloud-controls">
+      <button class="btn-cloud btn-login" onclick="signInWithGoogle()">🔐 تسجيل الدخول عبر Google</button>
+      <button class="btn-cloud btn-logout" onclick="signOutGoogle()">🚪 تسجيل الخروج</button>
+    </div>
+
+    <div class="cloud-status">
+      <div>
+        <div id="cloud-user">غير مسجل دخول</div>
+        <small id="cloud-hint">البيانات محفوظة محلياً. سجل دخول Google لتفعيل التخزين السحابي.</small>
+      </div>
+      <div class="pill" id="cloud-pill">LOCAL</div>
+    </div>
+
     <div class="backup-controls">
       <button class="btn-backup btn-export" onclick="exportData()">📥 حفظ نسخة احتياطية</button>
       <button class="btn-backup btn-import" onclick="document.getElementById('file-input').click()">📤 استعادة نسخة</button>
@@ -493,18 +574,37 @@
         <b id="stat-today-money" style="color:var(--primary)">0</b>
         <span>دخل اليوم</span>
       </div>
+
+      <div class="stat-item">
+        <b id="stat-yesterday-money" style="color:var(--primary)">0</b>
+        <span>دخل الأمس</span>
+      </div>
+
+      <div class="stat-item">
+        <b id="stat-week-money" style="color:var(--primary)">0</b>
+        <span>ربح آخر 7 أيام</span>
+      </div>
+
+      <div class="stat-item">
+        <b id="stat-month-money" style="color:var(--primary)">0</b>
+        <span>ربح الشهر الحالي</span>
+      </div>
+
       <div class="stat-item">
         <b id="stat-money" style="color:var(--success)">0</b>
         <span>إجمالي المداخيل</span>
       </div>
+
       <div class="stat-item" style="border-color: var(--danger);">
         <b id="stat-debt" style="color:var(--danger)">0</b>
         <span>إجمالي الديون (نطلبهم)</span>
       </div>
+
       <div class="stat-item">
         <b id="stat-expired">0</b>
         <span>اشتراكات منتهية</span>
       </div>
+
       <div class="stat-item" style="border-color: var(--warning);">
         <b id="stat-need-reminder" style="color:var(--warning)">0</b>
         <span>ينتهي خلال 3 أيام</span>
@@ -583,7 +683,7 @@
 
     <div class="search-area" style="display:flex; gap:8px; margin-bottom:14px;">
       <input type="text" id="q" placeholder="ابحث باسم الزبون أو الإيميل أو اسم المساحة..." oninput="render()" style="padding:12px; flex:1" />
-      <button style="padding:0 15px; border-radius:12px; border:1px solid #243155; background:var(--card); color:white;" onclick="render()">🔍</button>
+      <button style="padding:0 15px; border-radius:12px; border:1px solid rgba(236,72,153,0.18); background:var(--card); color:white; font-weight:900;" onclick="render()">🔍</button>
     </div>
 
     <div class="filter-title">
@@ -599,8 +699,8 @@
       <h2>Subscription Lady</h2>
       <div id="receipt-data"></div>
       <div class="receipt-footer">
-        <div class="thank-you-msg">شكراً لاختياركم Subscription Lady ✨</div>
-        <div style="font-size:1.45rem; color:#fbcfe8; font-weight:900;">للتواصل والدعم الفني (واتساب):</div>
+        <div class="thank-you-msg">شكراً لاختياركم Subscription Lady</div>
+        <div style="font-size:1.45rem; color:rgba(17,24,39,0.85); font-weight:900;">للتواصل والدعم الفني (واتساب):</div>
         <div class="contact-info">07777646928</div>
         <div id="r-date" class="receipt-date"></div>
       </div>
@@ -714,6 +814,164 @@
   </div>
 
   <script>
+    /*********************************************************************
+     *  ✅ تفعيل التخزين السحابي (Google) عبر Firebase:
+     *
+     *  1) افتح Firebase Console وسوّي Project
+     *  2) Authentication > Sign-in method > فعّل Google
+     *  3) Firestore Database > Create database
+     *  4) Project settings > General > Your apps (Web) > انسخ firebaseConfig
+     *  5) ضع firebaseConfig هنا بالضبط
+     *
+     *  ملاحظة:
+     *  - التخزين يكون داخل Firestore في Document خاص بكل مستخدم (UID)
+     *********************************************************************/
+    const firebaseConfig = {
+      // ضع بياناتك هنا (مهمة)
+      apiKey: "PUT_YOUR_API_KEY",
+      authDomain: "PUT_YOUR_AUTH_DOMAIN",
+      projectId: "PUT_YOUR_PROJECT_ID",
+      storageBucket: "PUT_YOUR_STORAGE_BUCKET",
+      messagingSenderId: "PUT_YOUR_SENDER_ID",
+      appId: "PUT_YOUR_APP_ID"
+    };
+
+    let firebaseReady = false;
+    let auth = null;
+    let dbCloud = null;
+    let currentUser = null;
+
+    // Debounce for cloud saves
+    let cloudSaveTimer = null;
+    let cloudLoadingNow = false;
+    let lastCloudWriteAt = 0;
+
+    function initFirebaseIfConfigured(){
+      // إذا المستخدم ما غيّر القيم، نخلي التطبيق يشتغل محلي بدون كراش
+      const looksConfigured =
+        firebaseConfig &&
+        firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("PUT_") &&
+        firebaseConfig.projectId && !firebaseConfig.projectId.includes("PUT_");
+
+      if (!looksConfigured){
+        setCloudUI(null, "LOCAL", "ضع بيانات Firebase لتفعيل التخزين السحابي.");
+        return;
+      }
+
+      try{
+        firebase.initializeApp(firebaseConfig);
+        auth = firebase.auth();
+        dbCloud = firebase.firestore();
+        firebaseReady = true;
+
+        auth.onAuthStateChanged(async (user) => {
+          currentUser = user || null;
+          if (currentUser){
+            setCloudUI(currentUser, "CLOUD", "تم تفعيل التخزين السحابي. سيتم حفظ أي تغيير تلقائياً.");
+            await loadFromCloud(); // تحميل بيانات المستخدم عند تسجيل الدخول
+            render();
+          } else {
+            setCloudUI(null, "LOCAL", "البيانات محفوظة محلياً. سجل دخول Google لتفعيل التخزين السحابي.");
+          }
+        });
+      } catch(e){
+        firebaseReady = false;
+        setCloudUI(null, "LOCAL", "فشل تفعيل Firebase. تأكد من بيانات config.");
+      }
+    }
+
+    function setCloudUI(user, mode, hint){
+      document.getElementById("cloud-pill").innerText = mode || "LOCAL";
+      document.getElementById("cloud-hint").innerText = hint || "";
+      if (user){
+        const name = user.displayName || "Google User";
+        const email = user.email || "";
+        document.getElementById("cloud-user").innerText = `مرحباً: ${name} ${email ? "— " + email : ""}`;
+      } else {
+        document.getElementById("cloud-user").innerText = "غير مسجل دخول";
+      }
+    }
+
+    async function signInWithGoogle(){
+      if (!firebaseReady) {
+        alert("التخزين السحابي غير مفعل. ضع بيانات firebaseConfig أولاً.");
+        return;
+      }
+      try{
+        const provider = new firebase.auth.GoogleAuthProvider();
+        await auth.signInWithPopup(provider);
+      } catch(e){
+        // على الموبايل أحياناً يحتاج redirect
+        try{
+          const provider = new firebase.auth.GoogleAuthProvider();
+          await auth.signInWithRedirect(provider);
+        } catch(err){
+          alert("تعذر تسجيل الدخول عبر Google. حاول مرة أخرى.");
+        }
+      }
+    }
+
+    async function signOutGoogle(){
+      if (!firebaseReady || !auth) return;
+      await auth.signOut();
+    }
+
+    function cloudDocRef(){
+      // Document ثابت لكل مستخدم
+      return dbCloud.collection("subscriptionLady").doc(currentUser.uid);
+    }
+
+    async function loadFromCloud(){
+      if (!firebaseReady || !currentUser) return;
+
+      cloudLoadingNow = true;
+      try{
+        const snap = await cloudDocRef().get();
+        if (snap.exists){
+          const data = snap.data() || {};
+          if (Array.isArray(data.db)){
+            db = data.db;
+            localStorage.setItem('cheap_store_m_db', JSON.stringify(db)); // مزامنة محلي أيضاً
+          }
+        } else {
+          // أول مرة: ارفع البيانات المحلية إذا موجودة
+          await saveToCloudNow();
+        }
+      } catch(e){
+        // ignore
+      } finally {
+        cloudLoadingNow = false;
+      }
+    }
+
+    function scheduleCloudSave(){
+      if (!firebaseReady || !currentUser) return;
+      if (cloudLoadingNow) return;
+
+      clearTimeout(cloudSaveTimer);
+      cloudSaveTimer = setTimeout(() => saveToCloudNow(), 600);
+    }
+
+    async function saveToCloudNow(){
+      if (!firebaseReady || !currentUser) return;
+      if (cloudLoadingNow) return;
+
+      try{
+        const now = Date.now();
+        lastCloudWriteAt = now;
+
+        // حفظ db كاملة داخل وثيقة واحدة
+        await cloudDocRef().set({
+          db: db,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+
+      } catch(e){
+        // ignore (ممكن تعرض تنبيه لو تحب)
+      }
+    }
+
+    /***********************  App Logic (Original)  ************************/
     let db = JSON.parse(localStorage.getItem('cheap_store_m_db')) || [];
     let currentFilter = 'all';
     let editingId = null;
@@ -754,7 +1012,7 @@
       const file = event.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = function (e) {
+      reader.onload = async function (e) {
         try {
           const importedDb = JSON.parse(e.target.result);
           if (Array.isArray(importedDb)) {
@@ -762,6 +1020,7 @@
               db = importedDb;
               localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
               render();
+              scheduleCloudSave(); // ✅ حفظ للسحابة بعد الاستيراد
               alert("تمت استعادة البيانات بنجاح ✅");
             }
           } else alert("تنسيق الملف غير صحيح!");
@@ -869,6 +1128,7 @@
 
       db.unshift(item);
       localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+      scheduleCloudSave(); // ✅ حفظ للسحابة
 
       document.getElementById('f-name').value = '';
       document.getElementById('f-phone').value = '';
@@ -947,6 +1207,7 @@
       else if (!paid) db[i].paymentDate = "";
 
       localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+      scheduleCloudSave(); // ✅ حفظ للسحابة
       closeEdit();
       render();
       alert("تم حفظ التعديل ✅");
@@ -974,6 +1235,7 @@
 
       db[i].reminded = true;
       localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+      scheduleCloudSave(); // ✅ حفظ للسحابة
       render();
 
       window.open(`https://api.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(msg)}`, '_blank');
@@ -1021,6 +1283,7 @@
       db[i].reminded = false;
 
       localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+      scheduleCloudSave(); // ✅ حفظ للسحابة
       render();
       alert("تم التجديد بنجاح ✅");
     }
@@ -1031,6 +1294,7 @@
       db[i].paid = !db[i].paid;
       db[i].paymentDate = db[i].paid ? new Date().toISOString() : "";
       localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+      scheduleCloudSave(); // ✅ حفظ للسحابة
       render();
     }
 
@@ -1038,6 +1302,7 @@
       if (confirm("هل أنت متأكد من حذف هذا المشترك؟")) {
         db = db.filter(x => x.id !== id);
         localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+        scheduleCloudSave(); // ✅ حفظ للسحابة
         render();
       }
     }
@@ -1072,16 +1337,17 @@
         <div class="receipt-row"><span>🛠 الخدمة:</span> <b>${c.service}</b></div>
         <div class="receipt-row"><span>🚀 المساحة:</span> <b>${c.space || 'عام'}</b></div>
         <div class="receipt-row"><span>📧 الإيميل:</span> <b style="direction:ltr;">${c.email}</b></div>
-        <div class="receipt-row"><span>💰 المبلغ:</span> <b style="color:#fbbf24;">${parseInt(c.price).toLocaleString()} د.ع</b></div>
-        <div class="receipt-row"><span>📅 الانتهاء:</span> <b style="color:#f87171;">${c.end}</b></div>
-        <div class="receipt-row"><span>💳 الحالة:</span> <b style="color:${c.paid ? '#10b981' : '#ef4444'};">${c.paid ? 'تم الدفع ✅' : 'مطلوب للدفع ⏳'}</b></div>
+        <div class="receipt-row"><span>💰 المبلغ:</span> <b style="color:#111827;">${parseInt(c.price).toLocaleString()} د.ع</b></div>
+        <div class="receipt-row"><span>📅 الانتهاء:</span> <b style="color:#111827;">${c.end}</b></div>
+        <div class="receipt-row"><span>💳 الحالة:</span> <b style="color:${c.paid ? '#059669' : '#111827'};">${c.paid ? 'تم الدفع ✅' : 'مطلوب للدفع ⏳'}</b></div>
       `;
 
       const target = document.getElementById('receipt-box');
 
       requestAnimationFrame(() => {
         html2canvas(target, {
-          backgroundColor: '#0b1220',
+          // ✅ خلفية فاتحة لتطابق الوصل (وتحافظ على وضوح الكتابة)
+          backgroundColor: '#ffe4f1',
           scale: 3,
           useCORS: true,
           allowTaint: true
@@ -1129,26 +1395,26 @@
       const hasSpaceSecrets = (c.spaceEmail && c.spaceEmail.trim() !== "") || (c.spaceCode && c.spaceCode.trim() !== "");
       if (hasSpaceSecrets) {
         spaceSecretHtml = `
-          <div class="action-btn" style="grid-column: span 4; background:#0b1220; border:1px solid #243155; color:#cbd5e1; cursor: default;">
+          <div class="action-btn" style="grid-column: span 4; background:#0b0612; border:1px solid rgba(236,72,153,0.18); color:rgba(255,255,255,0.92); cursor: default;">
             🔐 بيانات المساحة (سريّة):
-            <span style="direction:ltr; unicode-bidi:plaintext; font-weight:700; color:#fff;">
+            <span style="direction:ltr; unicode-bidi:plaintext; font-weight:900; color:#fff;">
               ${c.spaceEmail ? c.spaceEmail : '—'}${c.spaceCode ? ' / ' + c.spaceCode : ''}
             </span>
           </div>
-          <div class="action-btn" style="background:#0ea5e9;" onclick="copySpaceEmail('${c.id}')">نسخ الإيميل</div>
-          <div class="action-btn" style="background:#8b5cf6;" onclick="copySpaceCode('${c.id}')">نسخ الرمز</div>
+          <div class="action-btn" style="background:#db2777;" onclick="copySpaceEmail('${c.id}')">نسخ الإيميل</div>
+          <div class="action-btn" style="background:#f472b6;" onclick="copySpaceCode('${c.id}')">نسخ الرمز</div>
           <div class="action-btn" style="background:#22c55e;" onclick="openChatGPTLogin('${c.id}')">دخول ChatGPT</div>
-          <div class="action-btn" style="background:#334155; cursor: default;">سري</div>
+          <div class="action-btn" style="background:#1f0f2e; cursor: default;">سري</div>
         `;
       } else {
         spaceSecretHtml = `
-          <div class="action-btn" style="grid-column: span 4; background:#0b1220; border:1px dashed #243155; color:#a7b0c6; cursor: default;">
+          <div class="action-btn" style="grid-column: span 4; background:#0b0612; border:1px dashed rgba(236,72,153,0.22); color:rgba(255,255,255,0.70); cursor: default;">
             🔐 بيانات المساحة (سريّة): غير مضافة
           </div>
-          <div class="action-btn" style="background:#0ea5e9;" onclick="copySpaceEmail('${c.id}')">نسخ الإيميل</div>
-          <div class="action-btn" style="background:#8b5cf6;" onclick="copySpaceCode('${c.id}')">نسخ الرمز</div>
+          <div class="action-btn" style="background:#db2777;" onclick="copySpaceEmail('${c.id}')">نسخ الإيميل</div>
+          <div class="action-btn" style="background:#f472b6;" onclick="copySpaceCode('${c.id}')">نسخ الرمز</div>
           <div class="action-btn" style="background:#22c55e;" onclick="openChatGPTLogin('${c.id}')">دخول ChatGPT</div>
-          <div class="action-btn" style="background:#334155; cursor: default;">سري</div>
+          <div class="action-btn" style="background:#1f0f2e; cursor: default;">سري</div>
         `;
       }
 
@@ -1222,20 +1488,45 @@
       list.innerHTML = '';
 
       let totalMoney = 0, todayMoney = 0, totalDebt = 0;
+      let monthMoney = 0, weekMoney = 0, yesterdayMoney = 0;
       let expiredCount = 0, soonCount = 0, unpaidCount = 0;
 
       const now = new Date();
       const todayStr = now.toISOString().split('T')[0];
+
       const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+
+      const yesterdayStart = new Date(todayStart);
+      yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+      const yesterdayStr = yesterdayStart.toISOString().split('T')[0];
+
+      const monthStart = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
+      monthStart.setHours(0,0,0,0);
+
+      const last7Start = new Date(todayStart);
+      last7Start.setDate(last7Start.getDate() - 6);
+      last7Start.setHours(0,0,0,0);
 
       db.forEach(c => {
         const price = parseInt(c.price) || 0;
+
         if (c.paid) {
           totalMoney += price;
-          if (c.paymentDate && c.paymentDate.split('T')[0] === todayStr) todayMoney += price;
+
+          if (c.paymentDate) {
+            const payDate = new Date(c.paymentDate);
+            payDate.setHours(0,0,0,0);
+            const payStr = c.paymentDate.split('T')[0];
+
+            if (payStr === todayStr) todayMoney += price;
+            if (payStr === yesterdayStr) yesterdayMoney += price;
+            if (payDate >= last7Start && payDate <= todayStart) weekMoney += price;
+            if (payDate >= monthStart) monthMoney += price;
+          }
         } else {
           totalDebt += price; unpaidCount++;
         }
+
         const flags = computeFlags(c, todayStart);
         if (flags.isExpired) expiredCount++;
         if (flags.isSoon) soonCount++;
@@ -1249,6 +1540,9 @@
       document.getElementById('stat-count').innerText = db.length;
       document.getElementById('stat-money').innerText = totalMoney.toLocaleString() + " د.ع";
       document.getElementById('stat-today-money').innerText = todayMoney.toLocaleString() + " د.ع";
+      document.getElementById('stat-yesterday-money').innerText = yesterdayMoney.toLocaleString() + " د.ع";
+      document.getElementById('stat-week-money').innerText = weekMoney.toLocaleString() + " د.ع";
+      document.getElementById('stat-month-money').innerText = monthMoney.toLocaleString() + " د.ع";
       document.getElementById('stat-debt').innerText = totalDebt.toLocaleString() + " د.ع";
       document.getElementById('stat-expired').innerText = expiredCount;
       document.getElementById('stat-need-reminder').innerText = soonCount;
@@ -1290,6 +1584,8 @@
       }
     }
 
+    // تشغيل
+    initFirebaseIfConfigured();
     render();
   </script>
 </body>
