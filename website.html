@@ -9,18 +9,26 @@
 
   <style>
     :root {
-      --primary: #6366f1;
-      --secondary: #3b82f6;
+      /* ✅ تحويل ألوان الواجهة إلى أزرق + أسود */
+      --primary: #3b82f6;     /* أزرق */
+      --secondary: #60a5fa;   /* أزرق فاتح */
       --success: #10b981;
       --danger: #ef4444;
       --warning: #f59e0b;
-      --bg: #0f172a;
-      --card: #1e293b;
-      --text: #f1f5f9;
-      --input-bg: #334155;
+
+      --bg: #050814;          /* أسود مزرق غامق */
+      --card: #0b1220;        /* كرت غامق */
+      --text: #ffffff;        /* ✅ لون الكتابة أبيض */
+      --input-bg: #0f1a2e;    /* حقول أغمق */
     }
 
-    * { box-sizing: border-box; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
+    /* ✅ تكبير الخط شوي */
+    * {
+      box-sizing: border-box;
+      font-family: 'Tajawal', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      font-size: 16.5px;
+    }
 
     body {
       background-color: var(--bg);
@@ -33,18 +41,18 @@
     }
 
     .app-header {
-      background: #1e293b;
+      background: #0b1220;
       color: white;
-      padding: 25px 20px;
+      padding: 26px 20px;
       text-align: center;
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-      border-bottom: 1px solid #334155;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.45);
+      border-bottom: 1px solid rgba(59,130,246,0.25);
     }
-    .app-header h1 { margin: 0; font-size: 1.6rem; font-weight: 900; color: #818cf8; }
-    .app-header p { margin: 5px 0 0; font-size: 0.9rem; opacity: 0.8; }
+    .app-header h1 { margin: 0; font-size: 1.75rem; font-weight: 900; color: #ffffff; }
+    .app-header p { margin: 6px 0 0; font-size: 0.98rem; opacity: 0.9; color: rgba(255,255,255,0.9); }
 
     .container { padding: 15px; flex: 1; padding-bottom: 90px; }
 
@@ -55,21 +63,21 @@
       margin-bottom: 20px;
     }
     .btn-backup {
-      padding: 12px;
+      padding: 13px;
       border-radius: 12px;
-      border: 1px solid #334155;
-      background: #1e293b;
+      border: 1px solid rgba(59,130,246,0.25);
+      background: #0b1220;
       color: white;
-      font-size: 0.85rem;
-      font-weight: 700;
+      font-size: 0.95rem;
+      font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
     }
-    .btn-export { border-color: var(--success); color: var(--success); }
-    .btn-import { border-color: var(--secondary); color: var(--secondary); }
+    .btn-export { border-color: rgba(16,185,129,0.55); color: #34d399; }
+    .btn-import { border-color: rgba(59,130,246,0.55); color: #93c5fd; }
 
     .stats-bar {
       display: grid;
@@ -79,56 +87,57 @@
     }
     .stat-item {
       background: var(--card);
-      padding: 15px 5px;
+      padding: 16px 6px;
       border-radius: 12px;
       text-align: center;
-      border: 1px solid #334155;
+      border: 1px solid rgba(59,130,246,0.18);
     }
-    .stat-item b { display: block; font-size: 1.1rem; color: #fff; margin-bottom: 4px; }
-    .stat-item span { font-size: 0.75rem; color: #94a3b8; font-weight: 700; }
+    .stat-item b { display: block; font-size: 1.22rem; color: #fff; margin-bottom: 5px; font-weight: 900; }
+    .stat-item span { font-size: 0.9rem; color: rgba(255,255,255,0.78); font-weight: 800; }
 
     .form-card {
       background: var(--card);
       padding: 20px;
       border-radius: 15px;
       margin-bottom: 18px;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
-      border: 1px solid #334155;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(59,130,246,0.18);
     }
     .form-card h2 {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       margin-top: 0;
       margin-bottom: 15px;
-      color: var(--primary);
-      border-bottom: 1px solid #334155;
+      color: #93c5fd;
+      border-bottom: 1px solid rgba(59,130,246,0.18);
       padding-bottom: 10px;
+      font-weight: 900;
     }
 
     .field { margin-bottom: 15px; }
-    label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: #cbd5e1; }
+    label { display: block; font-size: 0.98rem; font-weight: 900; margin-bottom: 7px; color: rgba(255,255,255,0.92); }
     input, select {
       width: 100%;
       padding: 14px;
-      border: 1px solid #334155;
+      border: 1px solid rgba(59,130,246,0.20);
       border-radius: 12px;
-      font-size: 1rem;
+      font-size: 1.05rem;
       background: var(--input-bg);
       color: white;
       transition: 0.3s;
     }
-    input:focus, select:focus { border-color: var(--primary); outline: none; background: #334155; }
+    input:focus, select:focus { border-color: rgba(59,130,246,0.65); outline: none; background: #0f1a2e; }
 
     .btn-main {
       width: 100%;
       padding: 16px;
       background: var(--primary);
-      color: white;
+      color: #050814;
       border: none;
       border-radius: 12px;
-      font-weight: 700;
-      font-size: 1.1rem;
+      font-weight: 900;
+      font-size: 1.15rem;
       margin-top: 10px;
-      box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
       cursor: pointer;
     }
 
@@ -139,27 +148,27 @@
       margin-bottom: 15px;
       position: relative;
       border-right: 5px solid var(--primary);
-      border-top: 1px solid #334155;
-      border-bottom: 1px solid #334155;
-      border-left: 1px solid #334155;
+      border-top: 1px solid rgba(59,130,246,0.18);
+      border-bottom: 1px solid rgba(59,130,246,0.18);
+      border-left: 1px solid rgba(59,130,246,0.18);
     }
-    .customer-card.special { border-right-color: var(--warning); background: #1e293b; }
-    .customer-card.expired { border-right-color: var(--danger); opacity: 0.95; }
+    .customer-card.special { border-right-color: var(--warning); background: #0b1220; }
+    .customer-card.expired { border-right-color: var(--danger); opacity: 0.98; }
     .customer-card.warning-near { border-right-color: var(--warning); border-right-width: 8px; }
 
     .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .cust-name { font-weight: 800; font-size: 1.1rem; color: #fff; }
-    .cust-service { font-size: 0.8rem; color: white; background: var(--primary); padding: 4px 10px; border-radius: 8px; }
+    .cust-name { font-weight: 900; font-size: 1.15rem; color: #fff; }
+    .cust-service { font-size: 0.9rem; color: #050814; background: var(--primary); padding: 5px 10px; border-radius: 8px; font-weight: 900; }
 
-    .card-info { font-size: 0.95rem; margin-bottom: 15px; line-height: 1.6; color: #cbd5e1; }
+    .card-info { font-size: 1.02rem; margin-bottom: 15px; line-height: 1.7; color: rgba(255,255,255,0.88); }
     .card-info b { color: #fff; }
-    .email-text { font-size: 0.85rem; color: #818cf8; font-weight: 500; word-break: break-all; }
+    .email-text { font-size: 0.92rem; color: rgba(255,255,255,0.9); font-weight: 700; word-break: break-all; }
 
     .card-actions {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
-      border-top: 1px solid #334155;
+      border-top: 1px solid rgba(59,130,246,0.18);
       padding-top: 15px;
     }
 
@@ -168,8 +177,8 @@
       padding: 12px 0;
       border-radius: 10px;
       color: white;
-      font-size: 0.85rem;
-      font-weight: 700;
+      font-size: 0.92rem;
+      font-weight: 900;
       text-align: center;
       cursor: pointer;
       user-select: none;
@@ -178,18 +187,19 @@
     .bg-whatsapp { background: #16a34a; }
     .bg-contact { background: #22c55e; }
     .bg-pay { background: var(--success); }
-    .bg-img { background: #7c3aed; }
+    .bg-img { background: #1d4ed8; }     /* ✅ أزرق */
     .bg-del { background: var(--danger); }
-    .bg-edit { background: #0ea5e9; }
+    .bg-edit { background: #2563eb; }    /* ✅ أزرق */
     .bg-warning { background: var(--warning); color: #000; }
     .bg-reminded { background: #10b981; color: #fff; }
-    .bg-renew { background: #3b82f6; color: #fff; }
+    .bg-renew { background: #1e40af; color: #fff; } /* ✅ أزرق غامق */
 
     .status-tag {
-      font-size: 0.75rem;
+      font-size: 0.82rem;
       padding: 3px 8px;
       border-radius: 6px;
       margin-right: 5px;
+      font-weight: 900;
     }
     .status-paid { background: #064e3b; color: #34d399; }
     .status-unpaid { background: #7f1d1d; color: #f87171; }
@@ -199,9 +209,9 @@
       background: var(--warning);
       color: #000;
       text-align: center;
-      font-weight: bold;
-      font-size: 0.85rem;
-      padding: 6px;
+      font-weight: 900;
+      font-size: 0.95rem;
+      padding: 7px;
       border-radius: 8px;
       margin-bottom: 12px;
       animation: pulse 2s infinite;
@@ -210,16 +220,16 @@
       background: var(--danger);
       color: #fff;
       text-align: center;
-      font-weight: bold;
-      font-size: 0.85rem;
-      padding: 6px;
+      font-weight: 900;
+      font-size: 0.95rem;
+      padding: 7px;
       border-radius: 8px;
       margin-bottom: 12px;
-      opacity: 0.95;
+      opacity: 0.97;
     }
     @keyframes pulse {
       0% { opacity: 1; }
-      50% { opacity: 0.7; }
+      50% { opacity: 0.75; }
       100% { opacity: 1; }
     }
 
@@ -231,43 +241,44 @@
       pointer-events: none;
     }
 
-    /* ✅ تكبير خط الوصل */
+    /* ✅ صورة الوصل: أسود مع لون أبيض خفيف */
     .receipt {
-      width: 650px; /* كان 550 */
-      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      width: 650px;
+      background: linear-gradient(135deg, #000000 0%, #050814 70%, #0b1220 100%);
       color: #ffffff;
-      padding: 45px; /* أكبر */
+      padding: 45px;
       text-align: right;
-      border: 6px solid #6366f1;
+      border: 6px solid rgba(255,255,255,0.10);
       border-radius: 30px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.55);
     }
     .receipt h2 {
-      color: #818cf8;
+      color: #ffffff;
       text-align: center;
       margin-bottom: 28px;
-      font-size: 2.7rem; /* كان 2.2 */
+      font-size: 2.7rem;
       font-weight: 900;
-      border-bottom: 4px solid #334155;
+      border-bottom: 4px solid rgba(255,255,255,0.10);
       padding-bottom: 18px;
     }
     .receipt-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px; /* أكبر */
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
       padding-bottom: 10px;
       gap: 18px;
     }
     .receipt-row span {
-      color: #94a3b8;
+      color: rgba(255,255,255,0.75);
       font-weight: 900;
-      font-size: 1.35rem; /* كان 1.1 */
-      min-width: 170px; /* كان 140 */
+      font-size: 1.35rem;
+      min-width: 170px;
     }
     .receipt-row b {
       color: #ffffff;
-      font-size: 1.35rem; /* كان 1.1 */
+      font-size: 1.35rem;
       font-weight: 900;
     }
 
@@ -275,34 +286,34 @@
       text-align: center;
       margin-top: 34px;
       padding: 22px;
-      background: rgba(99, 102, 241, 0.1);
+      background: rgba(255, 255, 255, 0.05);
       border-radius: 20px;
-      border: 2px solid rgba(99, 102, 241, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.10);
     }
     .contact-info {
-      color: #10b981;
-      font-size: 2.6rem; /* كان 2.2 */
+      color: #ffffff;
+      font-size: 2.6rem;
       font-weight: 900;
       margin: 10px 0;
       display: block;
       direction: ltr;
     }
     .thank-you-msg {
-      font-size: 1.7rem; /* كان 1.4 */
-      color: #f1f5f9;
+      font-size: 1.7rem;
+      color: rgba(255,255,255,0.95);
       margin-bottom: 8px;
       font-weight: 900;
     }
     .receipt-date {
-      font-size: 1.05rem; /* كان 0.9 */
-      color: #6366f1;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.70);
       font-weight: 900;
     }
 
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.55);
+      background: rgba(0,0,0,0.60);
       display: none;
       align-items: center;
       justify-content: center;
@@ -314,9 +325,9 @@
       max-height: 88vh;
       overflow: auto;
       background: #0b1220;
-      border: 1px solid #334155;
+      border: 1px solid rgba(59,130,246,0.22);
       border-radius: 18px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.55);
       padding: 16px;
     }
     .modal-header {
@@ -326,21 +337,21 @@
       gap: 12px;
       margin-bottom: 10px;
       padding-bottom: 10px;
-      border-bottom: 1px solid #334155;
+      border-bottom: 1px solid rgba(59,130,246,0.18);
     }
     .modal-title {
       font-weight: 900;
-      color: #a5b4fc;
-      font-size: 1.05rem;
+      color: #ffffff;
+      font-size: 1.08rem;
     }
     .modal-close {
       background: transparent;
-      border: 1px solid #334155;
-      color: #cbd5e1;
+      border: 1px solid rgba(59,130,246,0.22);
+      color: rgba(255,255,255,0.90);
       border-radius: 10px;
       padding: 8px 10px;
       cursor: pointer;
-      font-weight: 800;
+      font-weight: 900;
     }
     .modal-grid {
       display: grid;
@@ -356,15 +367,15 @@
       gap: 10px;
       margin-top: 14px;
       padding-top: 12px;
-      border-top: 1px solid #334155;
+      border-top: 1px solid rgba(59,130,246,0.18);
     }
     .btn-secondary {
       width: 100%;
       padding: 14px;
       border-radius: 12px;
-      border: 1px solid #334155;
-      background: #111b2e;
-      color: #cbd5e1;
+      border: 1px solid rgba(59,130,246,0.18);
+      background: #050814;
+      color: rgba(255,255,255,0.90);
       font-weight: 900;
       cursor: pointer;
     }
@@ -374,7 +385,7 @@
       border-radius: 12px;
       border: 0;
       background: var(--primary);
-      color: #fff;
+      color: #050814;
       font-weight: 900;
       cursor: pointer;
     }
@@ -383,20 +394,20 @@
       gap: 10px;
       align-items: center;
       padding: 10px;
-      border: 1px solid #334155;
+      border: 1px solid rgba(59,130,246,0.18);
       border-radius: 12px;
-      background: #111b2e;
+      background: #050814;
       margin-top: 10px;
     }
     .mini-row input[type="checkbox"]{
       width: 18px;
       height: 18px;
-      accent-color: #6366f1;
+      accent-color: #3b82f6;
     }
     .mini-row span{
-      color: #cbd5e1;
+      color: rgba(255,255,255,0.92);
       font-weight: 900;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
     }
 
     .tabs-bar {
@@ -404,9 +415,9 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(15,23,42,0.92);
+      background: rgba(5,8,20,0.92);
       backdrop-filter: blur(8px);
-      border-top: 1px solid #334155;
+      border-top: 1px solid rgba(59,130,246,0.18);
       z-index: 999;
       padding: 10px 10px 12px;
     }
@@ -419,10 +430,10 @@
     }
     .tab-btn {
       position: relative;
-      border: 1px solid #334155;
+      border: 1px solid rgba(59,130,246,0.18);
       background: #0b1220;
       border-radius: 14px;
-      color: #cbd5e1;
+      color: rgba(255,255,255,0.86);
       padding: 10px 8px;
       cursor: pointer;
       text-align: center;
@@ -434,34 +445,34 @@
       justify-content: center;
       user-select: none;
     }
-    .tab-btn .icon { font-size: 1.2rem; line-height: 1; }
-    .tab-btn .label { font-size: 0.78rem; }
+    .tab-btn .icon { font-size: 1.25rem; line-height: 1; }
+    .tab-btn .label { font-size: 0.9rem; }
     .tab-btn.active {
-      border-color: rgba(99,102,241,0.7);
-      box-shadow: 0 0 0 3px rgba(99,102,241,0.18);
+      border-color: rgba(59,130,246,0.65);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.18);
       color: #fff;
     }
     .tab-badge {
       position: absolute;
       top: -7px;
       left: 10px;
-      background: #111b2e;
-      border: 1px solid #334155;
-      color: #cbd5e1;
+      background: #050814;
+      border: 1px solid rgba(59,130,246,0.18);
+      color: rgba(255,255,255,0.88);
       border-radius: 999px;
-      font-size: 0.72rem;
+      font-size: 0.82rem;
       font-weight: 900;
       padding: 2px 8px;
       min-width: 24px;
       text-align: center;
     }
-    .tab-badge.danger { border-color: rgba(239,68,68,0.55); color: #f87171; }
-    .tab-badge.warning { border-color: rgba(245,158,11,0.55); color: #fbbf24; }
-    .tab-badge.success { border-color: rgba(16,185,129,0.55); color: #34d399; }
+    .tab-badge.danger { border-color: rgba(239,68,68,0.55); color: #fca5a5; }
+    .tab-badge.warning { border-color: rgba(245,158,11,0.55); color: #fcd34d; }
+    .tab-badge.success { border-color: rgba(16,185,129,0.55); color: #6ee7b7; }
 
     .filter-title {
-      background: rgba(30,41,59,0.35);
-      border: 1px solid #334155;
+      background: rgba(11,18,32,0.6);
+      border: 1px solid rgba(59,130,246,0.18);
       border-radius: 16px;
       padding: 12px 14px;
       margin-bottom: 14px;
@@ -470,18 +481,19 @@
       justify-content: space-between;
       gap: 12px;
     }
-    .filter-title b { color: #fff; font-weight: 900; }
-    .filter-title span { color: #94a3b8; font-weight: 900; font-size: 0.85rem; }
+    .filter-title b { color: #fff; font-weight: 900; font-size: 1.05rem; }
+    .filter-title span { color: rgba(255,255,255,0.75); font-weight: 900; font-size: 0.95rem; }
 
     .empty {
-      background: rgba(30,41,59,0.35);
-      border: 1px dashed #334155;
+      background: rgba(11,18,32,0.55);
+      border: 1px dashed rgba(59,130,246,0.25);
       border-radius: 16px;
       padding: 14px;
-      color: #94a3b8;
+      color: rgba(255,255,255,0.72);
       font-weight: 900;
       text-align: center;
       margin-top: 10px;
+      font-size: 1rem;
     }
   </style>
 </head>
@@ -508,6 +520,22 @@
         <b id="stat-today-money" style="color:var(--primary)">0</b>
         <span>دخل اليوم</span>
       </div>
+
+      <div class="stat-item">
+        <b id="stat-yesterday-money" style="color:var(--primary)">0</b>
+        <span>دخل الأمس</span>
+      </div>
+
+      <div class="stat-item">
+        <b id="stat-week-money" style="color:var(--primary)">0</b>
+        <span>ربح آخر 7 أيام</span>
+      </div>
+
+      <div class="stat-item">
+        <b id="stat-month-money" style="color:var(--primary)">0</b>
+        <span>ربح الشهر الحالي</span>
+      </div>
+
       <div class="stat-item">
         <b id="stat-money" style="color:var(--success)">0</b>
         <span>إجمالي المداخيل</span>
@@ -598,7 +626,7 @@
 
     <div class="search-area" style="display:flex; gap:8px; margin-bottom:14px;">
       <input type="text" id="q" placeholder="ابحث باسم الزبون أو الإيميل أو اسم المساحة..." oninput="render()" style="padding:12px; flex:1" />
-      <button style="padding:0 15px; border-radius:12px; border:1px solid #334155; background:var(--card); color:white;" onclick="render()">🔍</button>
+      <button style="padding:0 15px; border-radius:12px; border:1px solid rgba(59,130,246,0.18); background:var(--card); color:white; font-weight:900;" onclick="render()">🔍</button>
     </div>
 
     <div class="filter-title">
@@ -611,11 +639,11 @@
 
   <div id="hidden-area">
     <div id="receipt-box" class="receipt">
-      <h2>المتجر الرخيص 💸</h2>
+      <h2>المتجر الرخيص</h2>
       <div id="receipt-data"></div>
       <div class="receipt-footer">
         <div class="thank-you-msg">شكراً لاختياركم المتجر الرخيص ✨</div>
-        <div style="font-size:1.45rem; color:#94a3b8; font-weight:900;">للتواصل والدعم الفني (واتساب):</div>
+        <div style="font-size:1.45rem; color:rgba(255,255,255,0.78); font-weight:900;">للتواصل والدعم الفني (واتساب):</div>
         <div class="contact-info">07782228104</div>
         <div id="r-date" class="receipt-date"></div>
       </div>
@@ -1096,7 +1124,7 @@
 
       requestAnimationFrame(() => {
         html2canvas(target, {
-          backgroundColor: '#0f172a',
+          backgroundColor: '#000000', /* ✅ خلفية الوصل: أسود */
           scale: 3,
           useCORS: true,
           allowTaint: true
@@ -1144,26 +1172,26 @@
       const hasSpaceSecrets = (c.spaceEmail && c.spaceEmail.trim() !== "") || (c.spaceCode && c.spaceCode.trim() !== "");
       if (hasSpaceSecrets) {
         spaceSecretHtml = `
-          <div class="action-btn" style="grid-column: span 4; background:#0b1220; border:1px solid #334155; color:#cbd5e1; cursor: default;">
+          <div class="action-btn" style="grid-column: span 4; background:#050814; border:1px solid rgba(59,130,246,0.18); color:rgba(255,255,255,0.92); cursor: default;">
             🔐 بيانات المساحة (سريّة):
-            <span style="direction:ltr; unicode-bidi:plaintext; font-weight:700; color:#fff;">
+            <span style="direction:ltr; unicode-bidi:plaintext; font-weight:900; color:#fff;">
               ${c.spaceEmail ? c.spaceEmail : '—'}${c.spaceCode ? ' / ' + c.spaceCode : ''}
             </span>
           </div>
-          <div class="action-btn" style="background:#0ea5e9;" onclick="copySpaceEmail('${c.id}')">نسخ الإيميل</div>
-          <div class="action-btn" style="background:#8b5cf6;" onclick="copySpaceCode('${c.id}')">نسخ الرمز</div>
+          <div class="action-btn" style="background:#2563eb;" onclick="copySpaceEmail('${c.id}')">نسخ الإيميل</div>
+          <div class="action-btn" style="background:#1d4ed8;" onclick="copySpaceCode('${c.id}')">نسخ الرمز</div>
           <div class="action-btn" style="background:#22c55e;" onclick="openChatGPTLogin('${c.id}')">دخول ChatGPT</div>
-          <div class="action-btn" style="background:#334155; cursor: default;">سري</div>
+          <div class="action-btn" style="background:#0f1a2e; cursor: default;">سري</div>
         `;
       } else {
         spaceSecretHtml = `
-          <div class="action-btn" style="grid-column: span 4; background:#0b1220; border:1px dashed #334155; color:#94a3b8; cursor: default;">
+          <div class="action-btn" style="grid-column: span 4; background:#050814; border:1px dashed rgba(59,130,246,0.22); color:rgba(255,255,255,0.70); cursor: default;">
             🔐 بيانات المساحة (سريّة): غير مضافة
           </div>
-          <div class="action-btn" style="background:#0ea5e9;" onclick="copySpaceEmail('${c.id}')">نسخ الإيميل</div>
-          <div class="action-btn" style="background:#8b5cf6;" onclick="copySpaceCode('${c.id}')">نسخ الرمز</div>
+          <div class="action-btn" style="background:#2563eb;" onclick="copySpaceEmail('${c.id}')">نسخ الإيميل</div>
+          <div class="action-btn" style="background:#1d4ed8;" onclick="copySpaceCode('${c.id}')">نسخ الرمز</div>
           <div class="action-btn" style="background:#22c55e;" onclick="openChatGPTLogin('${c.id}')">دخول ChatGPT</div>
-          <div class="action-btn" style="background:#334155; cursor: default;">سري</div>
+          <div class="action-btn" style="background:#0f1a2e; cursor: default;">سري</div>
         `;
       }
 
@@ -1237,20 +1265,46 @@
       list.innerHTML = '';
 
       let totalMoney = 0, todayMoney = 0, totalDebt = 0;
+      let monthMoney = 0, weekMoney = 0, yesterdayMoney = 0;
       let expiredCount = 0, soonCount = 0, unpaidCount = 0;
 
       const now = new Date();
       const todayStr = now.toISOString().split('T')[0];
+
       const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+
+      const yesterdayStart = new Date(todayStart);
+      yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+      const yesterdayStr = yesterdayStart.toISOString().split('T')[0];
+
+      const monthStart = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
+      monthStart.setHours(0,0,0,0);
+
+      /* ✅ آخر 7 أيام (يشمل اليوم + 6 أيام قبل) */
+      const last7Start = new Date(todayStart);
+      last7Start.setDate(last7Start.getDate() - 6);
+      last7Start.setHours(0,0,0,0);
 
       db.forEach(c => {
         const price = parseInt(c.price) || 0;
+
         if (c.paid) {
           totalMoney += price;
-          if (c.paymentDate && c.paymentDate.split('T')[0] === todayStr) todayMoney += price;
+
+          if (c.paymentDate) {
+            const payDate = new Date(c.paymentDate);
+            payDate.setHours(0,0,0,0);
+            const payStr = c.paymentDate.split('T')[0];
+
+            if (payStr === todayStr) todayMoney += price;
+            if (payStr === yesterdayStr) yesterdayMoney += price;
+            if (payDate >= last7Start && payDate <= todayStart) weekMoney += price;
+            if (payDate >= monthStart) monthMoney += price;
+          }
         } else {
           totalDebt += price; unpaidCount++;
         }
+
         const flags = computeFlags(c, todayStart);
         if (flags.isExpired) expiredCount++;
         if (flags.isSoon) soonCount++;
@@ -1264,6 +1318,9 @@
       document.getElementById('stat-count').innerText = db.length;
       document.getElementById('stat-money').innerText = totalMoney.toLocaleString() + " د.ع";
       document.getElementById('stat-today-money').innerText = todayMoney.toLocaleString() + " د.ع";
+      document.getElementById('stat-yesterday-money').innerText = yesterdayMoney.toLocaleString() + " د.ع";
+      document.getElementById('stat-week-money').innerText = weekMoney.toLocaleString() + " د.ع";
+      document.getElementById('stat-month-money').innerText = monthMoney.toLocaleString() + " د.ع";
       document.getElementById('stat-debt').innerText = totalDebt.toLocaleString() + " د.ع";
       document.getElementById('stat-expired').innerText = expiredCount;
       document.getElementById('stat-need-reminder').innerText = soonCount;
