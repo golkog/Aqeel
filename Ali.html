@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>تطبيق Ali Haider - النسخة المطورة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    :root {
+      /* ✅ تم تحويل ألوان الواجهة إلى رمادي */
+      --primary: #9ca3af;
+      --secondary: #6b7280;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --bg: #111827;
+      --card: #1f2937;
+      --text: #f3f4f6;
+      --input-bg: #374151;
+    }
+
+    * { box-sizing: border-box; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .app-header {
+      background: #1f2937;
+      color: white;
+      padding: 25px 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid #374151;
+    }
+    .app-header h1 { margin: 0; font-size: 1.6rem; font-weight: 900; color: #d1d5db; }
+    .app-header p { margin: 5px 0 0; font-size: 0.9rem; opacity: 0.8; }
+
+    .container { padding: 15px; flex: 1; padding-bottom: 90px; }
+
+    .backup-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .btn-backup {
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #374151;
+      background: #1f2937;
+      color: white;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-export { border-color: var(--success); color: var(--success); }
+    .btn-import { border-color: var(--secondary); color: var(--secondary); }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .stat-item {
+      background: var(--card);
+      padding: 15px 5px;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid #374151;
+    }
+    .stat-item b { display: block; font-size: 1.1rem; color: #fff; margin-bottom: 4px; }
+    .stat-item span { font-size: 0.75rem; color: #9ca3af; font-weight: 700; }
+
+    .form-card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+      border: 1px solid #374151;
+    }
+    .form-card h2 {
+      font-size: 1.1rem;
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: var(--primary);
+      border-bottom: 1px solid #374151;
+      padding-bottom: 10px;
+    }
+
+    .field { margin-bottom: 15px; }
+    label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: #d1d5db; }
+    input, select {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #374151;
+      border-radius: 12px;
+      font-size: 1rem;
+      background: var(--input-bg);
+      color: white;
+      transition: 0.3s;
+    }
+    input:focus, select:focus { border-color: var(--primary); outline: none; background: #374151; }
+
+    .btn-main {
+      width: 100%;
+      padding: 16px;
+      background: var(--primary);
+      color: #111827;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-top: 10px;
+      box-shadow: 0 4px 10px rgba(156, 163, 175, 0.25);
+      cursor: pointer;
+    }
+
+    .customer-card {
+      background: var(--card);
+      border-radius: 15px;
+      padding: 18px;
+      margin-bottom: 15px;
+      position: relative;
+      border-right: 5px solid var(--primary);
+      border-top: 1px solid #374151;
+      border-bottom: 1px solid #374151;
+      border-left: 1px solid #374151;
+    }
+    .customer-card.special { border-right-color: var(--warning); background: #1f2937; }
+    .customer-card.expired { border-right-color: var(--danger); opacity: 0.95; }
+    .customer-card.warning-near { border-right-color: var(--warning); border-right-width: 8px; }
+
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .cust-name { font-weight: 800; font-size: 1.1rem; color: #fff; }
+    .cust-service { font-size: 0.8rem; color: #111827; background: var(--primary); padding: 4px 10px; border-radius: 8px; }
+
+    .card-info { font-size: 0.95rem; margin-bottom: 15px; line-height: 1.6; color: #d1d5db; }
+    .card-info b { color: #fff; }
+    .email-text { font-size: 0.85rem; color: #e5e7eb; font-weight: 500; word-break: break-all; }
+
+    .card-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      border-top: 1px solid #374151;
+      padding-top: 15px;
+    }
+
+    .action-btn {
+      border: none;
+      padding: 12px 0;
+      border-radius: 10px;
+      color: white;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .bg-whatsapp { background: #16a34a; }
+    .bg-contact { background: #22c55e; }
+    .bg-pay { background: var(--success); }
+    .bg-img { background: #4b5563; }     /* ✅ رمادي */
+    .bg-del { background: var(--danger); }
+    .bg-edit { background: #6b7280; }    /* ✅ رمادي */
+    .bg-warning { background: var(--warning); color: #000; }
+    .bg-reminded { background: #10b981; color: #fff; }
+    .bg-renew { background: #6b7280; color: #fff; } /* ✅ رمادي */
+
+    .status-tag {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-right: 5px;
+    }
+    .status-paid { background: #064e3b; color: #34d399; }
+    .status-unpaid { background: #7f1d1d; color: #f87171; }
+    .status-warning { background: #78350f; color: #fbbf24; }
+
+    .reminder-banner {
+      background: var(--warning);
+      color: #000;
+      text-align: center;
+      font-weight: bold;
+      font-size: 0.85rem;
+      padding: 6px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      animation: pulse 2s infinite;
+    }
+    .expired-banner {
+      background: var(--danger);
+      color: #fff;
+      text-align: center;
+      font-weight: bold;
+      font-size: 0.85rem;
+      padding: 6px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      opacity: 0.95;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+
+    #hidden-area {
+      position: fixed;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ✅ صورة الوصل: أسود غامق */
+    .receipt {
+      width: 650px;
+      background: linear-gradient(135deg, #0b0f16 0%, #05070c 100%);
+      color: #ffffff;
+      padding: 45px;
+      text-align: right;
+      border: 6px solid #374151;
+      border-radius: 30px;
+    }
+    .receipt h2 {
+      color: #e5e7eb;
+      text-align: center;
+      margin-bottom: 28px;
+      font-size: 2.7rem;
+      font-weight: 900;
+      border-bottom: 4px solid #111827;
+      padding-bottom: 18px;
+    }
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding-bottom: 10px;
+      gap: 18px;
+    }
+    .receipt-row span {
+      color: #9ca3af;
+      font-weight: 900;
+      font-size: 1.35rem;
+      min-width: 170px;
+    }
+    .receipt-row b {
+      color: #ffffff;
+      font-size: 1.35rem;
+      font-weight: 900;
+    }
+
+    .receipt-footer {
+      text-align: center;
+      margin-top: 34px;
+      padding: 22px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.08);
+    }
+    .contact-info {
+      color: #e5e7eb;
+      font-size: 2.6rem;
+      font-weight: 900;
+      margin: 10px 0;
+      display: block;
+      direction: ltr;
+    }
+    .thank-you-msg {
+      font-size: 1.7rem;
+      color: #f3f4f6;
+      margin-bottom: 8px;
+      font-weight: 900;
+    }
+    .receipt-date {
+      font-size: 1.05rem;
+      color: #9ca3af;
+      font-weight: 900;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 14px;
+    }
+    .modal {
+      width: min(720px, 100%);
+      max-height: 88vh;
+      overflow: auto;
+      background: #0b1220;
+      border: 1px solid #374151;
+      border-radius: 18px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      padding: 16px;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #374151;
+    }
+    .modal-title {
+      font-weight: 900;
+      color: #e5e7eb;
+      font-size: 1.05rem;
+    }
+    .modal-close {
+      background: transparent;
+      border: 1px solid #374151;
+      color: #d1d5db;
+      border-radius: 10px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 560px) {
+      .modal-grid { grid-template-columns: 1fr; }
+    }
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #374151;
+    }
+    .btn-secondary {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #374151;
+      background: #111827;
+      color: #d1d5db;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .btn-save {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 0;
+      background: var(--primary);
+      color: #111827;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .mini-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid #374151;
+      border-radius: 12px;
+      background: #111827;
+      margin-top: 10px;
+    }
+    .mini-row input[type="checkbox"]{
+      width: 18px;
+      height: 18px;
+      accent-color: #9ca3af;
+    }
+    .mini-row span{
+      color: #d1d5db;
+      font-weight: 900;
+      font-size: 0.9rem;
+    }
+
+    .tabs-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(17,24,39,0.92);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid #374151;
+      z-index: 999;
+      padding: 10px 10px 12px;
+    }
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .tab-btn {
+      position: relative;
+      border: 1px solid #374151;
+      background: #0b1220;
+      border-radius: 14px;
+      color: #d1d5db;
+      padding: 10px 8px;
+      cursor: pointer;
+      text-align: center;
+      font-weight: 900;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+    .tab-btn .icon { font-size: 1.2rem; line-height: 1; }
+    .tab-btn .label { font-size: 0.78rem; }
+    .tab-btn.active {
+      border-color: rgba(156,163,175,0.7);
+      box-shadow: 0 0 0 3px rgba(156,163,175,0.18);
+      color: #fff;
+    }
+    .tab-badge {
+      position: absolute;
+      top: -7px;
+      left: 10px;
+      background: #111827;
+      border: 1px solid #374151;
+      color: #d1d5db;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 900;
+      padding: 2px 8px;
+      min-width: 24px;
+      text-align: center;
+    }
+    .tab-badge.danger { border-color: rgba(239,68,68,0.55); color: #f87171; }
+    .tab-badge.warning { border-color: rgba(245,158,11,0.55); color: #fbbf24; }
+    .tab-badge.success { border-color: rgba(16,185,129,0.55); color: #34d399; }
+
+    .filter-title {
+      background: rgba(31,41,55,0.35);
+      border: 1px solid #374151;
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .filter-title b { color: #fff; font-weight: 900; }
+    .filter-title span { color: #9ca3af; font-weight: 900; font-size: 0.85rem; }
+
+    .empty {
+      background: rgba(31,41,55,0.35);
+      border: 1px dashed #374151;
+      border-radius: 16px;
+      padding: 14px;
+      color: #9ca3af;
+      font-weight: 900;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="app-header">
+    <h1>Ali Haider 💸</h1>
+    <p>إدارة الاشتراكات والزبائن الاحترافية</p>
+  </header>
+
+  <div class="container">
+    <div class="backup-controls">
+      <button class="btn-backup btn-export" onclick="exportData()">📥 حفظ نسخة احتياطية</button>
+      <button class="btn-backup btn-import" onclick="document.getElementById('file-input').click()">📤 استعادة نسخة</button>
+      <input type="file" id="file-input" style="display:none" accept=".json" onchange="importData(event)" />
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-item">
+        <b id="stat-count">0</b>
+        <span>إجمالي الزبائن</span>
+      </div>
+      <div class="stat-item">
+        <b id="stat-today-money" style="color:var(--primary)">0</b>
+        <span>دخل اليوم</span>
+      </div>
+
+      <div class="stat-item">
+        <b id="stat-yesterday-money" style="color:var(--primary)">0</b>
+        <span>دخل الأمس</span>
+      </div>
+
+      <div class="stat-item">
+        <b id="stat-week-money" style="color:var(--primary)">0</b>
+        <span>ربح آخر 7 أيام</span>
+      </div>
+
+      <div class="stat-item">
+        <b id="stat-month-money" style="color:var(--primary)">0</b>
+        <span>ربح الشهر الحالي</span>
+      </div>
+
+      <div class="stat-item">
+        <b id="stat-money" style="color:var(--success)">0</b>
+        <span>إجمالي المداخيل</span>
+      </div>
+      <div class="stat-item" style="border-color: var(--danger);">
+        <b id="stat-debt" style="color:var(--danger)">0</b>
+        <span>إجمالي الديون (نطلبهم)</span>
+      </div>
+      <div class="stat-item">
+        <b id="stat-expired">0</b>
+        <span>اشتراكات منتهية</span>
+      </div>
+      <div class="stat-item" style="border-color: var(--warning);">
+        <b id="stat-need-reminder" style="color:var(--warning)">0</b>
+        <span>ينتهي خلال 3 أيام</span>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <h2>➕ إضافة اشتراك جديد</h2>
+
+      <div class="field">
+        <label>الخدمة</label>
+        <select id="f-service">
+          <option value="ChatGPT Plus">ChatGPT Plus 🤖</option>
+          <option value="Canva Pro">Canva Pro 🎨</option>
+          <option value="CapCut Pro">CapCut Pro 🎬</option>
+          <option value="عضوية ⭐">عضوية مميزة ⭐</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>اسم المساحة (Space Name)</label>
+        <input type="text" id="f-space" placeholder="مثال: Family Group 1" />
+      </div>
+
+      <div class="field">
+        <label>اسم الزبون</label>
+        <input type="text" id="f-name" placeholder="الاسم الكامل" />
+      </div>
+
+      <div class="field">
+        <label>رقم الواتساب</label>
+        <input type="tel" id="f-phone" placeholder="07xxxxxxxxx" />
+      </div>
+
+      <div class="field">
+        <label>إيميل الزبون (اختياري)</label>
+        <input type="email" id="f-email" placeholder="customer@example.com" style="direction:ltr; text-align:right;" />
+      </div>
+
+      <div class="field">
+        <label>إيميل المساحة (سري - لا يظهر للزبون)</label>
+        <input type="email" id="f-space-email" placeholder="space@example.com" style="direction:ltr; text-align:right;" />
+      </div>
+
+      <div class="field">
+        <label>رمز / كلمة مرور المساحة (سري - لا يظهر للزبون)</label>
+        <input type="text" id="f-space-code" placeholder="مثال: P@ss1234" style="direction:ltr; text-align:right;" />
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <div class="field" style="flex:1">
+          <label>المبلغ (دينار)</label>
+          <input type="number" id="f-price" value="10000" />
+        </div>
+        <div class="field" style="flex:1">
+          <label>المدة</label>
+          <select id="f-duration" disabled>
+            <option value="1">شهري</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <div class="field" style="flex:1">
+          <label>تاريخ البدء</label>
+          <input type="date" id="f-start" onchange="updateDate()" />
+        </div>
+        <div class="field" style="flex:1">
+          <label>النهاية (قابل للتعديل)</label>
+          <input type="date" id="f-end" />
+        </div>
+      </div>
+
+      <button class="btn-main" onclick="save()">حفظ البيانات</button>
+    </div>
+
+    <div class="search-area" style="display:flex; gap:8px; margin-bottom:14px;">
+      <input type="text" id="q" placeholder="ابحث باسم الزبون أو الإيميل أو اسم المساحة..." oninput="render()" style="padding:12px; flex:1" />
+      <button style="padding:0 15px; border-radius:12px; border:1px solid #374151; background:var(--card); color:white;" onclick="render()">🔍</button>
+    </div>
+
+    <div class="filter-title">
+      <b id="filter-title">كل المشتركين</b>
+      <span id="filter-subtitle">0</span>
+    </div>
+
+    <div id="list"></div>
+  </div>
+
+  <div id="hidden-area">
+    <div id="receipt-box" class="receipt">
+      <h2>Ali Haider</h2>
+      <div id="receipt-data"></div>
+      <div class="receipt-footer">
+        <div class="thank-you-msg">شكراً لاختياركم Ali Haider ✨</div>
+        <div style="font-size:1.45rem; color:#9ca3af; font-weight:900;">للتواصل والدعم الفني (واتساب):</div>
+        <div class="contact-info">07767086164</div>
+        <div id="r-date" class="receipt-date"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="edit-overlay" class="modal-overlay" onclick="closeEditIfOutside(event)">
+    <div class="modal" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">✏️ تعديل بيانات المشترك</div>
+        <button class="modal-close" onclick="closeEdit()">إغلاق</button>
+      </div>
+
+      <div class="modal-grid">
+        <div class="field">
+          <label>الخدمة</label>
+          <select id="e-service">
+            <option value="ChatGPT Plus">ChatGPT Plus 🤖</option>
+            <option value="Canva Pro">Canva Pro 🎨</option>
+            <option value="CapCut Pro">CapCut Pro 🎬</option>
+            <option value="عضوية ⭐">عضوية مميزة ⭐</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>المبلغ (دينار)</label>
+          <input type="number" id="e-price" />
+        </div>
+
+        <div class="field">
+          <label>اسم المساحة</label>
+          <input type="text" id="e-space" />
+        </div>
+
+        <div class="field">
+          <label>اسم الزبون</label>
+          <input type="text" id="e-name" />
+        </div>
+
+        <div class="field">
+          <label>رقم الواتساب</label>
+          <input type="tel" id="e-phone" />
+        </div>
+
+        <div class="field">
+          <label>إيميل الزبون</label>
+          <input type="email" id="e-email" style="direction:ltr; text-align:right;" />
+        </div>
+
+        <div class="field">
+          <label>إيميل المساحة (سري)</label>
+          <input type="email" id="e-space-email" style="direction:ltr; text-align:right;" />
+        </div>
+
+        <div class="field">
+          <label>رمز/كلمة مرور المساحة (سري)</label>
+          <input type="text" id="e-space-code" style="direction:ltr; text-align:right;" />
+        </div>
+
+        <div class="field">
+          <label>تاريخ البدء</label>
+          <input type="date" id="e-start" />
+        </div>
+
+        <div class="field">
+          <label>تاريخ النهاية</label>
+          <input type="date" id="e-end" />
+        </div>
+      </div>
+
+      <div class="mini-row">
+        <input type="checkbox" id="e-paid" />
+        <span>مدفوع</span>
+
+        <div style="flex:1"></div>
+
+        <input type="checkbox" id="e-reminded" />
+        <span>تم التذكير</span>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeEdit()">إلغاء</button>
+        <button class="btn-save" onclick="saveEdit()">حفظ التعديل</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs-bar">
+    <div class="tabs">
+      <button id="tab-all" class="tab-btn active" onclick="setFilter('all')">
+        <span class="tab-badge success" id="badge-all">0</span>
+        <span class="icon">👥</span>
+        <span class="label">الكل</span>
+      </button>
+      <button id="tab-unpaid" class="tab-btn" onclick="setFilter('unpaid')">
+        <span class="tab-badge danger" id="badge-unpaid">0</span>
+        <span class="icon">💸</span>
+        <span class="label">لم يدفع</span>
+      </button>
+      <button id="tab-soon" class="tab-btn" onclick="setFilter('soon')">
+        <span class="tab-badge warning" id="badge-soon">0</span>
+        <span class="icon">⏳</span>
+        <span class="label">قريب</span>
+      </button>
+      <button id="tab-expired" class="tab-btn" onclick="setFilter('expired')">
+        <span class="tab-badge danger" id="badge-expired">0</span>
+        <span class="icon">⛔</span>
+        <span class="label">منتهي</span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let db = JSON.parse(localStorage.getItem('cheap_store_m_db')) || [];
+    let currentFilter = 'all';
+    let editingId = null;
+
+    function hapticAndClickSound() {
+      if (navigator.vibrate) navigator.vibrate(18);
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.setValueAtTime(880, ctx.currentTime);
+        g.gain.setValueAtTime(0.0001, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.04, ctx.currentTime + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.08);
+        o.connect(g);
+        g.connect(ctx.destination);
+        o.start();
+        o.stop(ctx.currentTime + 0.09);
+        setTimeout(() => ctx.close().catch(()=>{}), 150);
+      } catch (e) {}
+    }
+
+    function exportData() {
+      if (db.length === 0) return alert("لا توجد بيانات لتصديرها");
+      const dataStr = JSON.stringify(db, null, 2);
+      const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+      const exportFileDefaultName = 'CheapStore_Backup_' + new Date().toLocaleDateString() + '.json';
+      let linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const importedDb = JSON.parse(e.target.result);
+          if (Array.isArray(importedDb)) {
+            if (confirm("هل تريد استبدال البيانات الحالية بالبيانات المستوردة؟")) {
+              db = importedDb;
+              localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+              render();
+              alert("تمت استعادة البيانات بنجاح ✅");
+            }
+          } else alert("تنسيق الملف غير صحيح!");
+        } catch (err) { alert("خطأ في قراءة الملف!"); }
+      };
+      reader.readAsText(file);
+    }
+
+    function setInitialDates() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const today = `${year}-${month}-${day}`;
+      document.getElementById('f-start').value = today;
+      updateDate();
+    }
+
+    function updateDate() {
+      let startInput = document.getElementById('f-start').value;
+      if (!startInput) return;
+      let start = new Date(startInput);
+      start.setMonth(start.getMonth() + 1);
+      const year = start.getFullYear();
+      const month = String(start.getMonth() + 1).padStart(2, '0');
+      const day = String(start.getDate()).padStart(2, '0');
+      document.getElementById('f-end').value = `${year}-${month}-${day}`;
+    }
+
+    setInitialDates();
+
+    function normalizeIraqPhone(phone) {
+      phone = (phone || "").replace(/\D/g, '');
+      if (phone.startsWith('964')) phone = '0' + phone.substring(3);
+      else if (phone && !phone.startsWith('0')) phone = '0' + phone;
+      return phone;
+    }
+
+    function copyText(text) {
+      if (!text) return alert("لا توجد بيانات للنسخ");
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => alert("تم النسخ ✅")).catch(() => fallbackCopy(text));
+      } else fallbackCopy(text);
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '0';
+      ta.style.top = '0';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try { document.execCommand('copy'); alert("تم النسخ ✅"); }
+      catch (e) { alert("تعذر النسخ، انسخ يدويًا."); }
+      document.body.removeChild(ta);
+    }
+
+    function copySpaceEmail(id) { const c = db.find(x => x.id === id); copyText(c?.spaceEmail || ""); }
+    function copySpaceCode(id) { const c = db.find(x => x.id === id); copyText(c?.spaceCode || ""); }
+
+    function openChatGPTLogin(id) {
+      const c = db.find(x => x.id === id);
+      const bundle = `Space Email: ${c?.spaceEmail || ""}\nSpace Code: ${c?.spaceCode || ""}`;
+      if ((c?.spaceEmail && c.spaceEmail.trim() !== "") || (c?.spaceCode && c.spaceCode.trim() !== "")) copyText(bundle);
+      else alert("لا يوجد ايميل/رمز للمساحة لهذا الزبون. أضفها أولاً ثم جرّب.");
+      alert("افتح الرابط بوضع التصفح المتخفي (Incognito) من كروم، ثم الصق البيانات وسجل دخولك.");
+      window.open("https://chatgpt.com", "_blank");
+    }
+
+    function contact(id) {
+      let c = db.find(x => x.id === id);
+      if (!c) return;
+      let p = (c.phone || "").replace(/\D/g, '');
+      if (p.startsWith('0')) p = '964' + p.substring(1);
+      window.open(`https://api.whatsapp.com/send?phone=${p}`, '_blank');
+    }
+
+    function save() {
+      const name = document.getElementById('f-name').value;
+      let phone = document.getElementById('f-phone').value;
+      const space = document.getElementById('f-space').value || 'عام';
+      const email = document.getElementById('f-email').value || 'لا يوجد';
+      const price = document.getElementById('f-price').value;
+      const endDate = document.getElementById('f-end').value;
+      const spaceEmail = document.getElementById('f-space-email').value || '';
+      const spaceCode = document.getElementById('f-space-code').value || '';
+      if (!name || !phone || !endDate) return alert("يرجى إدخال الاسم ورقم الهاتف وتاريخ النهاية");
+      phone = normalizeIraqPhone(phone);
+
+      const item = {
+        id: crypto.randomUUID(),
+        name, phone, email, space, spaceEmail, spaceCode,
+        service: document.getElementById('f-service').value,
+        price: price,
+        start: document.getElementById('f-start').value,
+        end: endDate,
+        paid: false,
+        paymentDate: "",
+        reminded: false,
+        createdAt: new Date().toISOString()
+      };
+
+      db.unshift(item);
+      localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+
+      document.getElementById('f-name').value = '';
+      document.getElementById('f-phone').value = '';
+      document.getElementById('f-email').value = '';
+      document.getElementById('f-space').value = '';
+      document.getElementById('f-space-email').value = '';
+      document.getElementById('f-space-code').value = '';
+
+      setInitialDates();
+      render();
+      window.scrollTo(0, 0);
+    }
+
+    function openEdit(id) {
+      const i = db.findIndex(x => x.id === id);
+      if (i === -1) return;
+      const c = db[i];
+      editingId = id;
+
+      document.getElementById('e-service').value = c.service || "ChatGPT Plus";
+      document.getElementById('e-price').value = parseInt(c.price) || 0;
+      document.getElementById('e-space').value = c.space || 'عام';
+      document.getElementById('e-name').value = c.name || '';
+      document.getElementById('e-phone').value = c.phone || '';
+      document.getElementById('e-email').value = (c.email && c.email !== 'لا يوجد') ? c.email : '';
+      document.getElementById('e-space-email').value = c.spaceEmail || '';
+      document.getElementById('e-space-code').value = c.spaceCode || '';
+      document.getElementById('e-start').value = c.start || '';
+      document.getElementById('e-end').value = c.end || '';
+      document.getElementById('e-paid').checked = !!c.paid;
+      document.getElementById('e-reminded').checked = !!c.reminded;
+
+      document.getElementById('edit-overlay').style.display = 'flex';
+      setTimeout(() => document.getElementById('e-name').focus(), 10);
+    }
+
+    function closeEdit() { editingId = null; document.getElementById('edit-overlay').style.display = 'none'; }
+    function closeEditIfOutside(e) { if (e.target && e.target.id === 'edit-overlay') closeEdit(); }
+
+    function saveEdit() {
+      if (!editingId) return;
+      const i = db.findIndex(x => x.id === editingId);
+      if (i === -1) return;
+
+      const name = document.getElementById('e-name').value.trim();
+      let phone = document.getElementById('e-phone').value.trim();
+      const space = document.getElementById('e-space').value.trim() || 'عام';
+      const email = document.getElementById('e-email').value.trim() || 'لا يوجد';
+      const spaceEmail = document.getElementById('e-space-email').value.trim();
+      const spaceCode = document.getElementById('e-space-code').value.trim();
+      const service = document.getElementById('e-service').value;
+      const priceNum = parseInt(document.getElementById('e-price').value);
+      const start = document.getElementById('e-start').value;
+      const end = document.getElementById('e-end').value;
+      const paid = document.getElementById('e-paid').checked;
+      const reminded = document.getElementById('e-reminded').checked;
+
+      if (!name || !phone || !end) return alert("يرجى إدخال اسم الزبون + رقم الواتساب + تاريخ النهاية");
+      phone = normalizeIraqPhone(phone);
+
+      db[i].name = name;
+      db[i].phone = phone;
+      db[i].space = space;
+      db[i].email = email;
+      db[i].spaceEmail = spaceEmail;
+      db[i].spaceCode = spaceCode;
+      db[i].service = service;
+      db[i].price = isNaN(priceNum) ? (db[i].price || "0") : String(priceNum);
+      db[i].start = start || db[i].start;
+      db[i].end = end;
+      db[i].reminded = reminded;
+
+      const wasPaid = !!db[i].paid;
+      db[i].paid = paid;
+      if (paid && !wasPaid) db[i].paymentDate = new Date().toISOString();
+      else if (!paid) db[i].paymentDate = "";
+
+      localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+      closeEdit();
+      render();
+      alert("تم حفظ التعديل ✅");
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const overlay = document.getElementById('edit-overlay');
+        if (overlay && overlay.style.display === 'flex') closeEdit();
+      }
+    });
+
+    function sendSoonReminder(id, daysLeft) {
+      let i = db.findIndex(x => x.id === id);
+      if (i === -1) return;
+      let c = db[i];
+
+      let p = c.phone.replace(/\D/g, '');
+      if (p.startsWith('0')) p = '964' + p.substring(1);
+
+      const msg = `السلام عليكم \n` +
+        `عزيزي الزبون باقي ${daysLeft} يوم/أيام على انتهاء اشتراكك في (${c.service}) بتاريخ (${c.end}). \n` +
+        `إذا تحب تجدد اشتراكك راسلنا واحنا بالخدمة. \n` +
+        `وشكراً جزيلاً الك`;
+
+      db[i].reminded = true;
+      localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+      render();
+
+      window.open(`https://api.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function renewSubscription(id) {
+      let i = db.findIndex(x => x.id === id);
+      if (i === -1) return;
+
+      const currentSpace = db[i].space || 'عام';
+      const currentSpaceEmail = db[i].spaceEmail || '';
+      const currentSpaceCode = db[i].spaceCode || '';
+
+      let newSpaceName = prompt("أدخل اسم المساحة (يمكن تغييره):", currentSpace);
+      if (newSpaceName === null) return;
+
+      let newSpaceEmail = prompt("أدخل إيميل المساحة السري (يمكن تغييره):", currentSpaceEmail);
+      if (newSpaceEmail === null) return;
+
+      let newSpaceCode = prompt("أدخل كلمة السر/الرمز للمساحة (يمكن تغييره):", currentSpaceCode);
+      if (newSpaceCode === null) return;
+
+      if (!confirm("هل تريد تجديد الاشتراك لمدة شهر من تاريخ اليوم؟")) return;
+
+      if (newSpaceName.trim() !== "") db[i].space = newSpaceName.trim();
+      db[i].spaceEmail = (newSpaceEmail || '').trim();
+      db[i].spaceCode = (newSpaceCode || '').trim();
+
+      let newStartDate = new Date();
+      newStartDate.setHours(0,0,0,0);
+      let newEndDate = new Date(newStartDate);
+      newEndDate.setMonth(newEndDate.getMonth() + 1);
+
+      const formatDate = (date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      };
+
+      db[i].start = formatDate(newStartDate);
+      db[i].end = formatDate(newEndDate);
+      db[i].paid = true;
+      db[i].paymentDate = new Date().toISOString();
+      db[i].reminded = false;
+
+      localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+      render();
+      alert("تم التجديد بنجاح ✅");
+    }
+
+    function togglePay(id) {
+      let i = db.findIndex(x => x.id === id);
+      if (i === -1) return;
+      db[i].paid = !db[i].paid;
+      db[i].paymentDate = db[i].paid ? new Date().toISOString() : "";
+      localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+      render();
+    }
+
+    function del(id) {
+      if (confirm("هل أنت متأكد من حذف هذا المشترك؟")) {
+        db = db.filter(x => x.id !== id);
+        localStorage.setItem('cheap_store_m_db', JSON.stringify(db));
+        render();
+      }
+    }
+
+    function wa(id) {
+      let c = db.find(x => x.id === id);
+      if (!c) return;
+      let p = c.phone.replace(/\D/g, '');
+      if (p.startsWith('0')) p = '964' + p.substring(1);
+
+      let msg = `*Ali Haider*\n\n` +
+        `👤 الزبون: ${c.name}\n` +
+        `🚀 المساحة: ${c.space || 'عام'}\n` +
+        `🛠 الخدمة: ${c.service}\n` +
+        `📧 الإيميل: ${c.email}\n` +
+        `💰 المبلغ: ${parseInt(c.price).toLocaleString()} د.ع\n` +
+        `📅 ينتهي في: ${c.end}\n` +
+        `💳 الحالة: ${c.paid ? 'تم الدفع ✅' : 'بانتظار الدفع ❌'}`;
+
+      window.open(`https://api.whatsapp.com/send?phone=${p}&text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function snap(id) {
+      let c = db.find(x => x.id === id);
+      if (!c) return;
+
+      document.getElementById('r-date').innerText = "تحريراً في: " + new Date().toLocaleDateString('ar-EG');
+
+      document.getElementById('receipt-data').innerHTML = `
+        <div class="receipt-row"><span>👤 الزبون:</span> <b>${c.name}</b></div>
+        <div class="receipt-row"><span>📞 الهاتف:</span> <b style="direction:ltr;">${c.phone}</b></div>
+        <div class="receipt-row"><span>🛠 الخدمة:</span> <b>${c.service}</b></div>
+        <div class="receipt-row"><span>🚀 المساحة:</span> <b>${c.space || 'عام'}</b></div>
+        <div class="receipt-row"><span>📧 الإيميل:</span> <b style="direction:ltr;">${c.email}</b></div>
+        <div class="receipt-row"><span>💰 المبلغ:</span> <b style="color:#fbbf24;">${parseInt(c.price).toLocaleString()} د.ع</b></div>
+        <div class="receipt-row"><span>📅 الانتهاء:</span> <b style="color:#f87171;">${c.end}</b></div>
+        <div class="receipt-row"><span>💳 الحالة:</span> <b style="color:${c.paid ? '#10b981' : '#ef4444'};">${c.paid ? 'تم الدفع ✅' : 'مطلوب للدفع ⏳'}</b></div>
+      `;
+
+      const target = document.getElementById('receipt-box');
+
+      requestAnimationFrame(() => {
+        html2canvas(target, {
+          backgroundColor: '#05070c', /* ✅ خلفية الوصل أسود غامق */
+          scale: 3,
+          useCORS: true,
+          allowTaint: true
+        }).then(canvas => {
+          const safeName = (c.name || 'زبون').replace(/[\\/:*?"<>|]/g, '-');
+          const filename = `وصل-${safeName}.png`;
+
+          canvas.toBlob((blob) => {
+            if (!blob) {
+              let a = document.createElement('a');
+              a.download = filename;
+              a.href = canvas.toDataURL("image/png");
+              a.click();
+              return;
+            }
+            const url = URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1500);
+          }, "image/png");
+        }).catch(() => alert("تعذر إنشاء صورة الوصل. حاول مرة أخرى."));
+      });
+    }
+
+    function buildCard(c, flags) {
+      const { isExpired, isSoon, daysLeft } = flags;
+
+      let renewBtnHtml = '';
+      if (isSoon || isExpired) {
+        renewBtnHtml = `<div class="action-btn bg-renew" style="grid-column: span 4; margin-bottom: 8px;" onclick="renewSubscription('${c.id}')">تجديد الاشتراك لمدة شهر 🔄</div>`;
+      }
+
+      let reminderBtnHtml = '';
+      if (isSoon) {
+        if (c.reminded) {
+          reminderBtnHtml = `<div class="action-btn bg-reminded" style="grid-column: span 4; margin-bottom: 8px;">تم التذكير ✅</div>`;
+        } else {
+          reminderBtnHtml = `<div class="action-btn bg-warning" style="grid-column: span 4; margin-bottom: 8px;" onclick="sendSoonReminder('${c.id}', ${daysLeft})">إرسال تذكير (ينتهي خلال ${daysLeft} يوم) 💬</div>`;
+        }
+      }
+
+      let spaceSecretHtml = '';
+      const hasSpaceSecrets = (c.spaceEmail && c.spaceEmail.trim() !== "") || (c.spaceCode && c.spaceCode.trim() !== "");
+      if (hasSpaceSecrets) {
+        spaceSecretHtml = `
+          <div class="action-btn" style="grid-column: span 4; background:#0b1220; border:1px solid #374151; color:#d1d5db; cursor: default;">
+            🔐 بيانات المساحة (سريّة):
+            <span style="direction:ltr; unicode-bidi:plaintext; font-weight:700; color:#fff;">
+              ${c.spaceEmail ? c.spaceEmail : '—'}${c.spaceCode ? ' / ' + c.spaceCode : ''}
+            </span>
+          </div>
+          <div class="action-btn" style="background:#6b7280;" onclick="copySpaceEmail('${c.id}')">نسخ الإيميل</div>
+          <div class="action-btn" style="background:#4b5563;" onclick="copySpaceCode('${c.id}')">نسخ الرمز</div>
+          <div class="action-btn" style="background:#22c55e;" onclick="openChatGPTLogin('${c.id}')">دخول ChatGPT</div>
+          <div class="action-btn" style="background:#374151; cursor: default;">سري</div>
+        `;
+      } else {
+        spaceSecretHtml = `
+          <div class="action-btn" style="grid-column: span 4; background:#0b1220; border:1px dashed #374151; color:#9ca3af; cursor: default;">
+            🔐 بيانات المساحة (سريّة): غير مضافة
+          </div>
+          <div class="action-btn" style="background:#6b7280;" onclick="copySpaceEmail('${c.id}')">نسخ الإيميل</div>
+          <div class="action-btn" style="background:#4b5563;" onclick="copySpaceCode('${c.id}')">نسخ الرمز</div>
+          <div class="action-btn" style="background:#22c55e;" onclick="openChatGPTLogin('${c.id}')">دخول ChatGPT</div>
+          <div class="action-btn" style="background:#374151; cursor: default;">سري</div>
+        `;
+      }
+
+      const currentPrice = parseInt(c.price) || 0;
+      const card = document.createElement('div');
+      card.className = `customer-card ${isExpired ? 'expired' : ''} ${isSoon ? 'warning-near' : ''} ${(c.service || "").includes('⭐') ? 'special' : ''}`;
+
+      let topBanner = '';
+      if (isSoon) topBanner = `<div class="reminder-banner">🔔 تنبيه: ينتهي اشتراك هذا الزبون خلال ${daysLeft} يوم/أيام!</div>`;
+      if (isExpired) topBanner = `<div class="expired-banner">⛔ تنبيه: اشتراك منتهي</div>`;
+
+      card.innerHTML = `
+        ${topBanner}
+        <div class="card-top">
+          <div class="cust-name">${c.name}</div>
+          <div class="cust-service">${c.service}</div>
+        </div>
+        <div class="card-info">
+          <div>🚀 المساحة: <b>${c.space || 'عام'}</b></div>
+          <div>📧 الإيميل: <span class="email-text">${c.email}</span></div>
+          <div>📞 الهاتف: <b>${c.phone}</b></div>
+          <div>📅 ينتهي: <b style="color:${isExpired ? 'var(--danger)' : (isSoon ? 'var(--warning)' : 'inherit')}">${c.end}</b>
+            ${isSoon ? '<span class="status-tag status-warning">قريب 🔔</span>' : ''}
+            ${isExpired ? '<span class="status-tag status-unpaid">منتهي ⛔</span>' : ''}
+          </div>
+          <div>💰 المبلغ: ${currentPrice.toLocaleString()} د.ع
+            <span class="status-tag ${c.paid ? 'status-paid' : 'status-unpaid'}">${c.paid ? 'مدفوع' : 'لم يدفع'}</span>
+          </div>
+        </div>
+        <div class="card-actions">
+          ${renewBtnHtml}
+          ${reminderBtnHtml}
+          ${spaceSecretHtml}
+
+          <div class="action-btn bg-edit" onclick="openEdit('${c.id}')">تعديل ✏️</div>
+          <div class="action-btn bg-pay" onclick="togglePay('${c.id}')">${c.paid ? 'إلغاء دفع' : 'تأكيد دفع'}</div>
+          <div class="action-btn bg-contact" onclick="contact('${c.id}')">تواصل</div>
+          <div class="action-btn bg-whatsapp" onclick="wa('${c.id}')">واتس</div>
+
+          <div class="action-btn bg-img" onclick="snap('${c.id}')">وصل</div>
+          <div class="action-btn bg-del" onclick="del('${c.id}')">حذف</div>
+        </div>
+      `;
+      return card;
+    }
+
+    function computeFlags(c, todayStart) {
+      const endDate = new Date(c.end);
+      endDate.setHours(0,0,0,0);
+      const msDay = 24 * 60 * 60 * 1000;
+      const diffDays = Math.round((endDate.getTime() - todayStart.getTime()) / msDay);
+      const isExpired = diffDays < 0;
+      const isSoon = diffDays >= 0 && diffDays <= 3;
+      return { isExpired, isSoon, daysLeft: diffDays };
+    }
+
+    function setFilter(filter) {
+      hapticAndClickSound();
+      currentFilter = filter;
+      ['all','unpaid','soon','expired'].forEach(t => {
+        const el = document.getElementById('tab-' + t);
+        if (el) el.classList.toggle('active', t === filter);
+      });
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function render() {
+      const q = (document.getElementById('q').value || "").toLowerCase();
+      const list = document.getElementById('list');
+      list.innerHTML = '';
+
+      let totalMoney = 0, todayMoney = 0, totalDebt = 0;
+      let monthMoney = 0, weekMoney = 0, yesterdayMoney = 0;
+      let expiredCount = 0, soonCount = 0, unpaidCount = 0;
+
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+
+      const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+
+      const yesterdayStart = new Date(todayStart);
+      yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+      const yesterdayStr = yesterdayStart.toISOString().split('T')[0];
+
+      const monthStart = new Date(todayStart.getFullYear(), todayStart.getMonth(), 1);
+      monthStart.setHours(0,0,0,0);
+
+      /* ✅ آخر 7 أيام (يشمل اليوم + 6 أيام قبل) */
+      const last7Start = new Date(todayStart);
+      last7Start.setDate(last7Start.getDate() - 6);
+      last7Start.setHours(0,0,0,0);
+
+      db.forEach(c => {
+        const price = parseInt(c.price) || 0;
+
+        if (c.paid) {
+          totalMoney += price;
+
+          if (c.paymentDate) {
+            const payDate = new Date(c.paymentDate);
+            payDate.setHours(0,0,0,0);
+            const payStr = c.paymentDate.split('T')[0];
+
+            if (payStr === todayStr) todayMoney += price;
+            if (payStr === yesterdayStr) yesterdayMoney += price;
+            if (payDate >= last7Start && payDate <= todayStart) weekMoney += price;
+            if (payDate >= monthStart) monthMoney += price;
+          }
+        } else {
+          totalDebt += price; unpaidCount++;
+        }
+
+        const flags = computeFlags(c, todayStart);
+        if (flags.isExpired) expiredCount++;
+        if (flags.isSoon) soonCount++;
+      });
+
+      document.getElementById('badge-all').innerText = db.length;
+      document.getElementById('badge-unpaid').innerText = unpaidCount;
+      document.getElementById('badge-soon').innerText = soonCount;
+      document.getElementById('badge-expired').innerText = expiredCount;
+
+      document.getElementById('stat-count').innerText = db.length;
+      document.getElementById('stat-money').innerText = totalMoney.toLocaleString() + " د.ع";
+      document.getElementById('stat-today-money').innerText = todayMoney.toLocaleString() + " د.ع";
+      document.getElementById('stat-yesterday-money').innerText = yesterdayMoney.toLocaleString() + " د.ع";
+      document.getElementById('stat-week-money').innerText = weekMoney.toLocaleString() + " د.ع";
+      document.getElementById('stat-month-money').innerText = monthMoney.toLocaleString() + " د.ع";
+      document.getElementById('stat-debt').innerText = totalDebt.toLocaleString() + " د.ع";
+      document.getElementById('stat-expired').innerText = expiredCount;
+      document.getElementById('stat-need-reminder').innerText = soonCount;
+
+      const titleMap = {
+        all: "كل المشتركين",
+        unpaid: "المشتركين الذين لم يدفعوا",
+        soon: "المشتركين الذين ينتهي اشتراكهم قريباً",
+        expired: "المشتركين الذين انتهى اشتراكهم"
+      };
+      document.getElementById('filter-title').innerText = titleMap[currentFilter] || "كل المشتركين";
+
+      let shown = 0;
+      db.forEach(c => {
+        const flags = computeFlags(c, todayStart);
+        const match =
+          (c.name || "").toLowerCase().includes(q) ||
+          (c.email || "").toLowerCase().includes(q) ||
+          (c.space || "").toLowerCase().includes(q) ||
+          (c.service || "").toLowerCase().includes(q);
+        if (!match) return;
+
+        let pass = true;
+        if (currentFilter === 'unpaid') pass = !c.paid;
+        else if (currentFilter === 'soon') pass = flags.isSoon;
+        else if (currentFilter === 'expired') pass = flags.isExpired;
+        if (!pass) return;
+
+        list.appendChild(buildCard(c, flags));
+        shown++;
+      });
+
+      document.getElementById('filter-subtitle').innerText = `${shown} نتيجة`;
+      if (shown === 0) {
+        const div = document.createElement('div');
+        div.className = 'empty';
+        div.innerText = "لا توجد نتائج ضمن هذا القسم";
+        list.appendChild(div);
+      }
+    }
+
+    render();
+  </script>
+</body>
+</html>
