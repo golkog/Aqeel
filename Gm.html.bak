@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بيانات الحساب</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #161b22;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid #30363d;
+        }
+        .item {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #8b949e;
+        }
+        .data-box {
+            background-color: #0d1117;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: monospace;
+            font-size: 16px;
+        }
+        .btn-copy {
+            background-color: #238636;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.2s;
+        }
+        .btn-copy:hover { background-color: #2ea043; }
+        
+        .btn-link {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background-color: #1f6feb;
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-link:hover { background-color: #388bfd; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h3 style="text-align: center; color: #58a6ff;">تفاصيل الحساب</h3>
+
+    <div class="item">
+        <label>الإيميل:</label>
+        <div class="data-box">
+            <span id="emailText">AshwoodSteenrod@gmail.com</span>
+            <button class="btn-copy" onclick="copy('emailText')">نسخ</button>
+        </div>
+    </div>
+
+    <div class="item">
+        <label>الرمز:</label>
+        <div class="data-box">
+            <span id="passText">aA1234567@</span>
+            <button class="btn-copy" onclick="copy('passText')">نسخ</button>
+        </div>
+    </div>
+
+    <div class="item">
+        <label>المصادقة الثنائية:</label>
+        <a href="https://2fa.fb.tools/BGSL2RBSGMBSMKBQEJC2JKOAELXFWNQY" target="_blank" class="btn-link">فتح رابط المصادقة</a>
+    </div>
+</div>
+
+<script>
+    function copy(id) {
+        const text = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(text);
+        alert("تم نسخ: " + text);
+    }
+</script>
+
+</body>
+</html>
