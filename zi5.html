@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل الحساب</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #161b22;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 350px;
+            border: 1px solid #30363d;
+            text-align: right;
+        }
+        h3 { text-align: center; color: #58a6ff; margin-bottom: 25px; }
+        .label { font-size: 13px; color: #8b949e; margin-bottom: 5px; display: block; }
+        
+        .data-row {
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .text-value {
+            flex-grow: 1;
+            font-family: monospace;
+            font-size: 15px;
+            color: #ffffff;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-right: 10px;
+        }
+        .btn-copy {
+            background-color: #238636;
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-copy:active { background-color: #2ea043; }
+        
+        .btn-link {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background-color: #1f6feb;
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h3>تفاصيل الحساب</h3>
+
+    <label class="label">الإيميل:</label>
+    <div class="data-row">
+        <button class="btn-copy" onclick="copyToClipboard('GondranMarsico@gmail.com')">نسخ</button>
+        <span class="text-value">BeckyMounce893@gmail.com</span>
+    </div>
+
+    <label class="label">الرمز:</label>
+    <div class="data-row">
+        <button class="btn-copy" onclick="copyToClipboard('@aA1234567')">نسخ</button>
+        <span class="text-value">@aA1234567</span>
+    </div>
+
+    <label class="label">المصادقة الثنائية:</label>
+    <a href="https://2fa.fb.tools/IMWWSYEISQM5QHTYAPWQZIGISO7FITHD" target="_blank" class="btn-link">فتح رابط المصادقة</a>
+</div>
+
+<script>
+    function copyToClipboard(text) {
+        // إنشاء عنصر نصي مؤقت للنسخ
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        textArea.setSelectionRange(0, 99999); // للهواتف
+
+        try {
+            document.execCommand('copy');
+            alert("تم النسخ: " + text);
+        } catch (err) {
+            console.error('فشل النسخ', err);
+        }
+
+        document.body.removeChild(textArea);
+    }
+</script>
+
+</body>
+</html>
